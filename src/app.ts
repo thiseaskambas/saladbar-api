@@ -1,8 +1,8 @@
 import express from 'express';
 import mongoose from 'mongoose';
 
-import productsRouter from './routes/productsRoutes';
-import config from './utils/config';
+import productsRouter from './routes/productsRoutes.js';
+import config from './utils/config.js';
 
 const app = express();
 app.use(express.json());
