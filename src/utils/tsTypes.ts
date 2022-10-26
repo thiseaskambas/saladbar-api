@@ -2,6 +2,17 @@ import mongoose from 'mongoose';
 
 export interface IProduct extends mongoose.Document {
   name: string;
-  quantity: number;
   price: number;
+}
+
+export interface ICartItem extends mongoose.Document {
+  product: IProduct['_id'];
+  quantity: number;
+  totalPrice: number;
+}
+
+export interface ICart extends mongoose.Document {
+  items: [ICartItem];
+  createdAt: Date;
+  totalPrice: number;
 }
