@@ -1,5 +1,5 @@
 import * as dotenv from 'dotenv';
-import { parseUri } from './ts-utils';
+import { parseUri } from './tsUtils.js';
 
 dotenv.config();
 
