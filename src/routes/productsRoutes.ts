@@ -1,7 +1,7 @@
-import express from 'express';
+import { Router } from 'express';
 import productsController from '../controllers/productsController';
 
-const router = express.Router();
+const router = Router();
 
 router
   .route('/')

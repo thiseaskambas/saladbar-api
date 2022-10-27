@@ -1,5 +1,6 @@
 import { Schema, model } from 'mongoose';
-import { ICart, ICartItem } from '../utils/tsTypes';
+import { ICart, ICartItem, IProduct } from '../utils/tsTypes';
+import Product from './productModel';
 
 const cartItemSchema = new Schema<ICartItem>(
   {
@@ -8,8 +9,9 @@ const cartItemSchema = new Schema<ICartItem>(
       ref: 'Product',
       required: [true, 'only existing products can be added to the cart'],
     },
-    quantity: Number,
-    totalPrice: Number,
+    quantity: { type: Number, default: 0 },
+    totalPrice: { type: Number, default: 0 },
+    itemPrice: { type: Number, default: 0 },
   },
   { _id: false }
 );
@@ -33,8 +35,24 @@ const cartSchema = new Schema<ICart>(
   }
 );
 
-cartSchema.pre('save', (next) => {
-  console.log('this : ', this);
+cartItemSchema.pre('save', async function (next) {
+  const self: ICartItem = this;
+  const product: IProduct | null = await Product.findOne(self.product);
+  if (!product) {
+    return next();
+  }
+  self.totalPrice = product.price * self.quantity;
+  self.itemPrice = product.price;
+  next();
+});
+
+cartSchema.pre('save', async function (next) {
+  const self: ICart = this;
+  const totalCartPrice = self.items.reduce((acc, cv) => {
+    return acc + cv.totalPrice;
+  }, 0);
+  self.totalPrice = totalCartPrice;
+  console.log('cart : ', self);
   next();
 });
 

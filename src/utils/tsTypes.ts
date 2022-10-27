@@ -13,6 +13,7 @@ export interface INewProductEntry {
 export interface ICartItem extends mongoose.Document {
   product: IProduct['_id'];
   quantity: number;
+  itemPrice: number;
   totalPrice: number;
 }
 
