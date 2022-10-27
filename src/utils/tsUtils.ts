@@ -38,7 +38,7 @@ const isProductCourseType = (param: any): param is ProductCourseType => {
 
 const parseProductCourseType = (courseType: any): ProductCourseType => {
   if (!courseType || !isProductCourseType(courseType)) {
-    throw new Error('incorrect product course type');
+    throw new Error('missing or incorrect product course type');
   }
   return courseType;
 };
