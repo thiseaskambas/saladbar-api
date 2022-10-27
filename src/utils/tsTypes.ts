@@ -3,11 +3,13 @@ import mongoose from 'mongoose';
 export interface IProduct extends mongoose.Document {
   name: string;
   price: number;
+  productCourseType: ProductCourseType;
 }
 
 export interface INewProductEntry {
   name: string;
   price: number;
+  productCourseType: ProductCourseType;
 }
 
 export interface ICartItem extends mongoose.Document {
@@ -33,3 +35,11 @@ export interface ICartItemEntry {
 }
 
 export type NodeEnv = 'dev' | 'prod';
+
+export enum ProductCourseType {
+  Starter = 'starter',
+  Main = 'main',
+  Desert = 'desert',
+  Drink = 'drink',
+  Other = 'other',
+}

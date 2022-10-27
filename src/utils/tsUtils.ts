@@ -3,6 +3,7 @@ import {
   INewCartEntry,
   INewProductEntry,
   NodeEnv,
+  ProductCourseType,
 } from './tsTypes';
 
 //The isSomething functions are a so-called type guards which have a type predicate as the return type
@@ -31,11 +32,22 @@ const parsePrice = (price: unknown): number => {
   return Number(price);
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const isProductCourseType = (param: any): param is ProductCourseType => {
+  return Object.values(ProductCourseType).includes(param);
+};
+
+const parseProductCourseType = (courseType: any): ProductCourseType => {
+  if (!courseType || !isProductCourseType(courseType)) {
+    throw new Error('incorrect product course type');
+  }
+  return courseType;
+};
+
 export const toNewProductEntry = (object: any): INewProductEntry => {
   const newProductEntry: INewProductEntry = {
     name: parseName(object.name),
     price: parsePrice(object.price),
+    productCourseType: parseProductCourseType(object.productCourseType),
   };
   return newProductEntry;
 };
