@@ -1,15 +1,12 @@
 import express from 'express';
+import productsController from '../controllers/productsController';
 
 const router = express.Router();
 
 router
   .route('/')
-  .get((_req, res) => {
-    res.send('all products');
-  })
-  .post((_req, res) => {
-    res.send('creating products');
-  });
+  .get(productsController.getAllProducts)
+  .post(productsController.createProduct);
 
 router
   .route('/:id')
