@@ -13,6 +13,14 @@ const productSchema = new mongoose.Schema<IProduct>({
     required: [true, 'Products must have a price of zero or more'],
     min: 0,
   },
+  productCourseType: {
+    type: String,
+    required: [true, 'product must have be a CourseType'],
+    enum: {
+      values: ['starter', 'main', 'desert', 'drink', 'other'],
+      message: 'CourseType is "starter", "main", "desert", "drink" OR "other"',
+    },
+  },
 });
 
 productSchema.set('toJSON', {
