@@ -18,7 +18,18 @@ export interface ICartItem extends mongoose.Document {
 }
 
 export interface ICart extends mongoose.Document {
-  items: [ICartItem];
+  items: ICartItem[];
   createdAt: Date;
   totalPrice: number;
 }
+
+export interface INewCartEntry {
+  items: ICartItemEntry[];
+}
+
+export interface ICartItemEntry {
+  product: IProduct['_id'];
+  quantity: number;
+}
+
+export type NodeEnv = 'dev' | 'prod';

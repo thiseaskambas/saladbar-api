@@ -52,7 +52,12 @@ cartSchema.pre('save', async function (next) {
     return acc + cv.totalPrice;
   }, 0);
   self.totalPrice = totalCartPrice;
-  console.log('cart : ', self);
+  // console.log('cart : ', self);
+  next();
+});
+
+cartSchema.pre(/^find/, function (next) {
+  this.populate({ path: 'items.product', select: 'name' });
   next();
 });
 
