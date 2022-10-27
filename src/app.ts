@@ -1,8 +1,9 @@
 import express from 'express';
 import mongoose from 'mongoose';
 
-import productsRouter from './routes/productsRoutes.js';
-import config from './utils/config.js';
+import productsRouter from './routes/productsRoutes';
+import cartRouter from './routes/cartRoutes';
+import config from './utils/config';
 
 const app = express();
 app.use(express.json());
@@ -12,11 +13,7 @@ mongoose
   .then(() => console.log('connected to DB'))
   .catch((err) => console.log(err));
 
-app.get('/ping', (_req, res) => {
-  console.log('someone pinged here');
-  res.send('pong');
-});
-
 app.use('/api/v1/products', productsRouter);
+app.use('/api/v1/carts', cartRouter);
 
 export default app;

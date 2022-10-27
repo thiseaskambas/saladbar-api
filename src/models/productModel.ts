@@ -7,15 +7,27 @@ const productSchema = new mongoose.Schema<IProduct>({
     type: String,
     required: [true, 'Products must have a name'],
   },
-  quantity: {
-    type: Number,
-    required: [true, 'Products must have a quantity of zero or more'],
-    min: 0,
-  },
+
   price: {
     type: Number,
     required: [true, 'Products must have a price of zero or more'],
     min: 0,
+  },
+  productCourseType: {
+    type: String,
+    required: [true, 'product must have be a CourseType'],
+    enum: {
+      values: ['starter', 'main', 'desert', 'drink', 'other'],
+      message: 'CourseType is "starter", "main", "desert", "drink" OR "other"',
+    },
+  },
+});
+
+productSchema.set('toJSON', {
+  transform: (_document, returnedObject) => {
+    returnedObject.id = returnedObject._id.toString();
+    delete returnedObject._id;
+    delete returnedObject.__v;
   },
 });
 
