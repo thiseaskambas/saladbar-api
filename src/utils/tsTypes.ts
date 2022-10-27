@@ -5,6 +5,11 @@ export interface IProduct extends mongoose.Document {
   price: number;
 }
 
+export interface INewProductEntry {
+  name: string;
+  price: number;
+}
+
 export interface ICartItem extends mongoose.Document {
   product: IProduct['_id'];
   quantity: number;
