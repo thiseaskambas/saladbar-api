@@ -38,12 +38,13 @@ const cartSchema = new Schema<ICart>(
 cartItemSchema.pre('save', async function (next) {
   const self: ICartItem = this;
   const product: IProduct | null = await Product.findOne(self.product);
-  if (!product) {
-    return next();
+  if (product) {
+    self.totalPrice = product.price * self.quantity;
+    self.itemPrice = product.price;
+    next();
+  } else {
+    throw new Error(`No products found with the given id : ${self.product} `);
   }
-  self.totalPrice = product.price * self.quantity;
-  self.itemPrice = product.price;
-  next();
 });
 
 cartSchema.pre('save', async function (next) {
@@ -52,7 +53,7 @@ cartSchema.pre('save', async function (next) {
     return acc + cv.totalPrice;
   }, 0);
   self.totalPrice = totalCartPrice;
-  // console.log('cart : ', self);
+
   next();
 });
 
