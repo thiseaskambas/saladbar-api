@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 
+import config from '../utils/config';
 import Product from '../models/productModel';
 import { catchAsync } from '../utils/catchAsync';
 import { toNewProductEntry } from '../utils/tsUtils';
@@ -19,4 +20,12 @@ const createProduct = catchAsync(
   }
 );
 
-export default { getAllProducts, createProduct };
+const deleteAllProduct = catchAsync(async (req: Request, res: Response) => {
+  if (req.body.deleteAll === 'true' && config.NODE_ENV === 'dev') {
+    await Product.deleteMany({});
+    return res.send('deleted all products');
+  }
+  return res.send('no delete');
+});
+
+export default { getAllProducts, createProduct, deleteAllProduct };

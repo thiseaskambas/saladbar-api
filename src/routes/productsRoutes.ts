@@ -6,7 +6,8 @@ const router = Router();
 router
   .route('/')
   .get(productsController.getAllProducts)
-  .post(productsController.createProduct);
+  .post(productsController.createProduct)
+  .delete(productsController.deleteAllProduct);
 
 router
   .route('/:id')
