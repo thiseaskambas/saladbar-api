@@ -21,6 +21,11 @@ const productSchema = new mongoose.Schema<IProduct>({
       message: 'CourseType is "starter", "main", "desert", "drink" OR "other"',
     },
   },
+  active: {
+    type: Boolean,
+    required: [true, 'a product must be active true/false'],
+    default: true,
+  },
 });
 
 productSchema.set('toJSON', {

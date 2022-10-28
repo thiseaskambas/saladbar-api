@@ -9,7 +9,12 @@ const cartItemSchema = new Schema<ICartItem>(
       ref: 'Product',
       required: [true, 'only existing products can be added to the cart'],
     },
-    quantity: { type: Number, default: 0 },
+    quantity: {
+      type: Number,
+      required: [true, 'quantity must be provided'],
+      min: 1,
+      max: 999999,
+    },
     totalPrice: { type: Number, default: 0 },
     itemPrice: { type: Number, default: 0 },
   },

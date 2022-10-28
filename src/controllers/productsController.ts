@@ -5,10 +5,16 @@ import Product from '../models/productModel';
 import { catchAsync } from '../utils/catchAsync';
 import { toNewProductEntry } from '../utils/tsUtils';
 
+//controllers for baseURL
 const getAllProducts = catchAsync(
   async (_req: Request, res: Response, _next: NextFunction) => {
     const allProducts = await Product.find({});
-    res.send(allProducts);
+    res.status(200).json({
+      status: 'success',
+      data: {
+        data: allProducts,
+      },
+    });
   }
 );
 
@@ -16,16 +22,61 @@ const createProduct = catchAsync(
   async (req: Request, res: Response, _next: NextFunction) => {
     const product = toNewProductEntry(req.body);
     const newProduct = await Product.create(product);
-    res.send(newProduct);
+    res.status(201).json({
+      status: 'success',
+      data: {
+        data: newProduct,
+      },
+    });
   }
 );
 
-const deleteAllProduct = catchAsync(async (req: Request, res: Response) => {
-  if (req.body.deleteAll === 'true' && config.NODE_ENV === 'dev') {
-    await Product.deleteMany({});
-    return res.send('deleted all products');
+const deleteAllProducts = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    if (req.body.deleteAll === 'true' && config.NODE_ENV === 'dev') {
+      await Product.deleteMany({});
+      res.status(204).json({
+        status: 'success',
+        data: null,
+      });
+    }
+    return next(new Error('Could NOT delete'));
   }
-  return res.send('no delete');
-});
+);
 
-export default { getAllProducts, createProduct, deleteAllProduct };
+//controllers for baseURL/:id
+const getProductById = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const found = await Product.findById(req.params.id);
+    if (!found) {
+      return next(new Error('Could not find product'));
+    }
+    res.status(200).json({
+      status: 'success',
+      data: {
+        data: found,
+      },
+    });
+  }
+);
+
+const deleteOneProduct = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const deleted = Product.findByIdAndDelete(req.params.id);
+    if (!deleted) {
+      next(new Error('No product was found with given ID - no delete'));
+    }
+    res.status(204).json({
+      status: 'success',
+      data: null,
+    });
+  }
+);
+
+export default {
+  getAllProducts,
+  createProduct,
+  deleteAllProducts,
+  getProductById,
+  deleteOneProduct,
+};

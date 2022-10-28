@@ -11,14 +11,10 @@ router
 
 router
   .route('/:id')
-  .get((_req, res) => {
-    res.send('get specific cart');
-  })
+  .get(cartController.getCartById)
+  .delete()
   .patch((_req, res) => {
     res.send('edit specific cart');
-  })
-  .delete((_req, res) => {
-    res.send('delete specific cart');
   });
 
 export default router;

@@ -4,6 +4,7 @@ export interface IProduct extends mongoose.Document {
   name: string;
   price: number;
   productCourseType: ProductCourseType;
+  active: boolean;
 }
 
 export interface INewProductEntry {

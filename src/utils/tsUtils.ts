@@ -59,19 +59,24 @@ export const parseNodeEnv = (env: unknown): NodeEnv => {
   return env;
 };
 
-const isCartItemEntry = (item: any): item is ICartItemEntry => {
+const isValidCartItemEntry = (item: any): item is ICartItemEntry => {
   if (!(item.hasOwnProperty('product') && item.hasOwnProperty('quantity'))) {
     return false;
   }
-  if (!isString(item.product) || isNaN(Number(item.quantity))) {
+  if (
+    !isString(item.product) ||
+    isNaN(Number(item.quantity)) ||
+    item.quantity < 1 ||
+    item.quantity > 999999
+  ) {
     return false;
   }
   return true;
 };
 
 const parseCartItemEntry = (item: any): ICartItemEntry => {
-  if (!isCartItemEntry(item)) {
-    throw new Error('Item malformed');
+  if (!isValidCartItemEntry(item)) {
+    throw new Error('Cart item not valid');
   }
   return { product: item.product, quantity: item.quantity };
 };
