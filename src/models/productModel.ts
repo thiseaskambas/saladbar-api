@@ -17,9 +17,14 @@ const productSchema = new mongoose.Schema<IProduct>({
     type: String,
     required: [true, 'product must have be a CourseType'],
     enum: {
-      values: ['starter', 'main', 'desert', 'drink', 'other'],
+      values: ['starter', 'main', 'desert', 'drink', 'side', 'other'],
       message: 'CourseType is "starter", "main", "desert", "drink" OR "other"',
     },
+  },
+  active: {
+    type: Boolean,
+    required: [true, 'a product must be active true/false'],
+    default: true,
   },
 });
 

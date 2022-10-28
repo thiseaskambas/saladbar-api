@@ -6,18 +6,15 @@ const router = Router();
 router
   .route('/')
   .get(productsController.getAllProducts)
-  .post(productsController.createProduct);
+  .post(productsController.createProduct)
+  .delete(productsController.deleteAllProducts);
 
 router
   .route('/:id')
-  .get((_req, res) => {
-    res.send('get specific product');
-  })
+  .get(productsController.getProductById)
+  .delete(productsController.deleteOneProduct)
   .patch((_req, res) => {
     res.send('edit specific product');
-  })
-  .delete((_req, res) => {
-    res.send('delete specific product');
   });
 
 export default router;

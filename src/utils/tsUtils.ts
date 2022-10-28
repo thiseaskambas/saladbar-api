@@ -59,27 +59,39 @@ export const parseNodeEnv = (env: unknown): NodeEnv => {
   return env;
 };
 
-const isCartItemEntry = (item: any): item is ICartItemEntry => {
+const isValidCartItemEntry = (item: any): item is ICartItemEntry => {
   if (!(item.hasOwnProperty('product') && item.hasOwnProperty('quantity'))) {
     return false;
   }
-  return isString(item.product) && !isNaN(Number(item.quantity));
-};
-
-const isArrayOfCartItemEntries = (arr: any): arr is ICartItemEntry[] => {
-  return arr.every(isCartItemEntry);
-};
-
-export const parseCartItems = (arr: unknown): ICartItemEntry[] => {
-  if (!arr || !isArrayOfCartItemEntries(arr)) {
-    throw new Error('Cart items are not correctly structured');
+  if (
+    !isString(item.product) ||
+    isNaN(Number(item.quantity)) ||
+    item.quantity < 1 ||
+    item.quantity > 999999
+  ) {
+    return false;
   }
-  return arr;
+  return true;
+};
+
+const parseCartItemEntry = (item: any): ICartItemEntry => {
+  if (!isValidCartItemEntry(item)) {
+    throw new Error('Cart item not valid');
+  }
+  return { product: item.product, quantity: item.quantity };
+};
+
+export const parseCartItemsArr = (arr: unknown): ICartItemEntry[] => {
+  if (!arr || !(arr instanceof Array)) {
+    throw new Error('Cart items are not  inside an array');
+  }
+
+  return arr.map((el) => parseCartItemEntry(el));
 };
 
 export const toNewCartEntry = (object: any): INewCartEntry => {
   const newCartEntry: INewCartEntry = {
-    items: parseCartItems(object.items),
+    items: parseCartItemsArr(object.items),
   };
   return newCartEntry;
 };
