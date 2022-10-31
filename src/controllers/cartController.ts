@@ -39,6 +39,7 @@ const createCart = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+//NOTE: only in dev environment for dev db
 const deleteAllCarts = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     if (req.body.deleteAll === 'true' && config.NODE_ENV === 'dev') {
