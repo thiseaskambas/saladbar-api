@@ -45,3 +45,8 @@ export enum ProductCourseType {
   Side = 'side',
   Other = 'other',
 }
+
+export interface IReqQueryAfterBeforeDate {
+  after: string;
+  before: string;
+}
