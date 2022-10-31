@@ -2,6 +2,7 @@ import {
   ICartItemEntry,
   INewCartEntry,
   INewProductEntry,
+  IReqQueryAfterBeforeDate,
   NodeEnv,
   ProductCourseType,
 } from './tsTypes';
@@ -74,14 +75,14 @@ const isValidCartItemEntry = (item: any): item is ICartItemEntry => {
   return true;
 };
 
-const parseCartItemEntry = (item: any): ICartItemEntry => {
+const parseCartItemEntry = (item: unknown): ICartItemEntry => {
   if (!isValidCartItemEntry(item)) {
     throw new Error('Cart item not valid');
   }
   return { product: item.product, quantity: item.quantity };
 };
 
-export const parseCartItemsArr = (arr: unknown): ICartItemEntry[] => {
+const parseCartItemsArr = (arr: unknown): ICartItemEntry[] => {
   if (!arr || !(arr instanceof Array)) {
     throw new Error('Cart items are not  inside an array');
   }
@@ -94,4 +95,26 @@ export const toNewCartEntry = (object: any): INewCartEntry => {
     items: parseCartItemsArr(object.items),
   };
   return newCartEntry;
+};
+
+const isDateString = (date: unknown): date is string => {
+  if (isString(date)) {
+    return new Date(date) instanceof Date && !isNaN(Date.parse(date));
+  }
+  return false;
+};
+
+const parseQueryDate = (date: unknown): string => {
+  if (!isDateString(date)) {
+    throw new Error('not a valid date format');
+  }
+  return date;
+};
+
+export const toReqQueryAfterBefore = (obj: any): IReqQueryAfterBeforeDate => {
+  const reqQuery: IReqQueryAfterBeforeDate = {
+    after: parseQueryDate(obj.after),
+    before: parseQueryDate(obj.before),
+  };
+  return reqQuery;
 };
