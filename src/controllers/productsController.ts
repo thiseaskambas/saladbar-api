@@ -4,6 +4,7 @@ import config from '../utils/config';
 import Product from '../models/productModel';
 import { catchAsync } from '../utils/catchAsync';
 import { toNewProductEntry } from '../utils/tsUtils';
+import { IProduct } from '../utils/tsTypes';
 
 //controllers for baseURL
 const getAllProducts = catchAsync(
@@ -47,7 +48,7 @@ const deleteAllProducts = catchAsync(
 //controllers for baseURL/:id
 const getProductById = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const found = await Product.findById(req.params.id);
+    const found: IProduct | null = await Product.findById(req.params.id);
     if (!found) {
       return next(new Error('Could not find product'));
     }

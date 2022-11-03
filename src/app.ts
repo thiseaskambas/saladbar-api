@@ -5,6 +5,7 @@ import productsRouter from './routes/productsRoutes';
 import cartRouter from './routes/cartRoutes';
 import authRouter from './routes/authRoutes';
 import refreshTokenRouter from './routes/refreshTokenRoutes';
+import usersRouter from './routes/usersRoutes';
 import logoutRouter from './routes/logoutRoutes';
 import config from './utils/config';
 import cookieParser from 'cookie-parser';
@@ -21,6 +22,7 @@ mongoose
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/refresh', refreshTokenRouter);
 app.use('/api/v1/logout', logoutRouter);
+app.use('/api/v1/users', usersRouter);
 app.use('/api/v1/products', productsRouter);
 app.use('/api/v1/carts', cartRouter);
 
