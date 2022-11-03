@@ -17,7 +17,21 @@ const findOneUser = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const found: IUser | null = await User.findById(req.params.id);
     if (!found) {
-      return next(new Error('No document found with that ID')); //404
+      return next(new Error('No user found with that ID')); //404
+    }
+    res.status(200).json({
+      status: 'success',
+      data: {
+        data: found,
+      },
+    });
+  }
+);
+const findMe = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const found: IUser | null = await User.findById(req.user?.id);
+    if (!found) {
+      return next(new Error('No user found with that ID')); //404
     }
     res.status(200).json({
       status: 'success',
@@ -28,4 +42,4 @@ const findOneUser = catchAsync(
   }
 );
 
-export default { findAllUsers, findOneUser };
+export default { findAllUsers, findOneUser, findMe };
