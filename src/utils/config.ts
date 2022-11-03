@@ -1,6 +1,6 @@
 import * as dotenv from 'dotenv';
 import { NodeEnv } from './tsTypes';
-import { parseNodeEnv, parseUri } from './tsUtils';
+import { parseNodeEnv, parseSecret, parseUri } from './tsUtils';
 
 dotenv.config();
 
@@ -13,8 +13,18 @@ const DB_URI: string =
     ? parseUri(process.env.DB_URI_DEV)
     : parseUri(process.env.DB_URI_PROD);
 
+//TODO: type tokens correctly
+const ACCESS_TOKEN_SECRET: string = parseSecret(
+  process.env.ACCESS_TOKEN_SECRET
+);
+const REFRESH_TOKEN_SECRET: string = parseSecret(
+  process.env.REFRESH_TOKEN_SECRET
+);
+
 export default {
   NODE_ENV,
   DB_URI,
   PORT,
+  ACCESS_TOKEN_SECRET,
+  REFRESH_TOKEN_SECRET,
 };

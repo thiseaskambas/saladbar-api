@@ -1,7 +1,9 @@
 import {
   ICartItemEntry,
+  ILoginCredentials,
   INewCartEntry,
   INewProductEntry,
+  INewUserEntry,
   IReqQueryAfterBeforeDate,
   NodeEnv,
   ProductCourseType,
@@ -17,6 +19,16 @@ export const parseUri = (uri: unknown): string => {
     throw new Error('incorrect or missing uri');
   }
   return uri;
+};
+
+export const parseSecret = (secret: unknown): string => {
+  if (!secret || !isString(secret)) {
+    throw new Error('incorrect or missing secret');
+  }
+  if (secret.length < 16) {
+    throw new Error('secret must be at least 15 chars long');
+  }
+  return secret;
 };
 
 const parseName = (name: unknown): string => {
@@ -51,6 +63,14 @@ export const toNewProductEntry = (object: any): INewProductEntry => {
     productCourseType: parseProductCourseType(object.productCourseType),
   };
   return newProductEntry;
+};
+
+export const toLoginCredentials = (obj: any): ILoginCredentials => {
+  const loginCredentials: ILoginCredentials = {
+    password: parseFormStringInput(obj.password, 'password'),
+    email: parseFormStringInput(obj.email, 'email'),
+  };
+  return loginCredentials;
 };
 
 export const parseNodeEnv = (env: unknown): NodeEnv => {
@@ -117,4 +137,25 @@ export const toReqQueryAfterBefore = (obj: any): IReqQueryAfterBeforeDate => {
     before: parseQueryDate(obj.before),
   };
   return reqQuery;
+};
+
+const parseFormStringInput = (input: unknown, description: string): string => {
+  if (!input || !isString(input)) {
+    throw new Error(`Missing or incorect ${description}`);
+  }
+  return input;
+};
+
+export const toNewUserEntry = (obj: any): INewUserEntry => {
+  const newUserEntry = {
+    username: parseFormStringInput(obj.username, 'username'),
+    email: parseFormStringInput(obj.email, 'email'),
+    password: parseFormStringInput(obj.password, 'password'),
+    fullName: parseFormStringInput(obj.fullName, 'full name'),
+    passwordConfirm: parseFormStringInput(
+      obj.passwordConfirm,
+      'confirmation password'
+    ),
+  };
+  return newUserEntry;
 };
