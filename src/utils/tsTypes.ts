@@ -56,7 +56,7 @@ export interface IReqQueryAfterBeforeDate {
   before: string;
 }
 
-type Role = 'user' | 'admin';
+export type Role = 'user' | 'admin';
 
 export interface IUser extends mongoose.Document {
   username: string;
