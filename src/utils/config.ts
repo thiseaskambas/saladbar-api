@@ -1,6 +1,11 @@
 import * as dotenv from 'dotenv';
 import { NodeEnv } from './tsTypes';
-import { parseNodeEnv, parseSecret, parseUri } from './tsUtils';
+import {
+  parseEmailCredentials,
+  parseNodeEnv,
+  parseSecret,
+  parseUri,
+} from './tsUtils';
 
 dotenv.config();
 
@@ -21,10 +26,17 @@ const REFRESH_TOKEN_SECRET: string = parseSecret(
   process.env.REFRESH_TOKEN_SECRET
 );
 
+const GMAIL_NODEMAILER_PSW: string = parseEmailCredentials(
+  process.env.GMAIL_NODEMAILER_PSW
+);
+const GMAIL_EMAIL: string = parseEmailCredentials(process.env.GMAIL_EMAIL);
+
 export default {
   NODE_ENV,
   DB_URI,
   PORT,
   ACCESS_TOKEN_SECRET,
   REFRESH_TOKEN_SECRET,
+  GMAIL_NODEMAILER_PSW,
+  GMAIL_EMAIL,
 };

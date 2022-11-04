@@ -21,6 +21,13 @@ export const parseUri = (uri: unknown): string => {
   return uri;
 };
 
+export const parseEmailCredentials = (cred: unknown): string => {
+  if (!cred || !isString(cred)) {
+    throw new Error('incorrect or missing credentials');
+  }
+  return cred;
+};
+
 export const parseSecret = (secret: unknown): string => {
   if (!secret || !isString(secret)) {
     throw new Error('incorrect or missing secret');
