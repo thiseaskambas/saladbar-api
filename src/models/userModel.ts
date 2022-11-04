@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import { Schema, model } from 'mongoose';
 import validator from 'validator';
 import { IUser } from '../utils/tsTypes';
@@ -46,6 +47,9 @@ const userSchema = new Schema<IUser>(
     },
     fullName: String,
     refreshToken: String,
+    passwordChangedAt: Date,
+    passwordResetToken: String || undefined,
+    passwordResetExpires: Date || undefined,
   },
   {
     toJSON: {
@@ -58,6 +62,26 @@ const userSchema = new Schema<IUser>(
     },
   }
 );
+
+userSchema.pre('save', function (next) {
+  if (!this.isModified('password') || this.isNew) return next();
+
+  this.passwordChangedAt = new Date(Date.now() - 1000);
+  next();
+});
+
+userSchema.methods.createPasswordResetToken = function () {
+  const resetToken = crypto.randomBytes(32).toString('hex');
+
+  this.passwordResetToken = crypto
+    .createHash('sha256')
+    .update(resetToken)
+    .digest('hex');
+
+  this.passwordResetExpires = new Date(Date.now() + 10 * 60 * 1000);
+
+  return resetToken;
+};
 
 const User = model('User', userSchema);
 export default User;
