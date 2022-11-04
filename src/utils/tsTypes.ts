@@ -13,6 +13,13 @@ export interface INewProductEntry {
   productCourseType: ProductCourseType;
 }
 
+export interface IUpdateProductEntry {
+  name?: string;
+  price?: number;
+  productCourseType?: ProductCourseType;
+  active?: boolean;
+}
+
 export interface ICartItem extends mongoose.Document {
   product: IProduct['_id'];
   quantity: number;
@@ -56,7 +63,7 @@ export interface IReqQueryAfterBeforeDate {
   before: string;
 }
 
-export type Role = 'user' | 'admin';
+export type Role = 'user' | 'admin' | 'dev';
 
 export interface IUser extends mongoose.Document {
   username: string;

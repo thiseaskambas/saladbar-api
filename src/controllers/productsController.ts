@@ -4,7 +4,11 @@ import config from '../utils/config';
 import Product from '../models/productModel';
 import { catchAsync } from '../utils/catchAsync';
 import { toNewProductEntry } from '../utils/tsUtils';
-import { IProduct } from '../utils/tsTypes';
+import {
+  INewProductEntry,
+  IProduct,
+  IUpdateProductEntry,
+} from '../utils/tsTypes';
 
 //controllers for baseURL
 const getAllProducts = catchAsync(
@@ -21,7 +25,7 @@ const getAllProducts = catchAsync(
 
 const createProduct = catchAsync(
   async (req: Request, res: Response, _next: NextFunction) => {
-    const product = toNewProductEntry(req.body);
+    const product: INewProductEntry = toNewProductEntry(req.body);
     const newProduct = await Product.create(product);
     res.status(201).json({
       status: 'success',
@@ -32,7 +36,7 @@ const createProduct = catchAsync(
   }
 );
 
-const deleteAllProducts = catchAsync(
+const deleteAllDevProducts = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     if (req.body.deleteAll === 'true' && config.NODE_ENV === 'dev') {
       await Product.deleteMany({});
@@ -74,10 +78,35 @@ const deleteOneProduct = catchAsync(
   }
 );
 
+const editProduct = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { name, price, productCourseType, active }: IUpdateProductEntry =
+      req.body;
+    const edited: IProduct | null = await Product.findByIdAndUpdate(
+      req.params.id,
+      { name, price, productCourseType, active },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+    if (!edited) {
+      return next(new Error('No document found with that ID')); //404
+    }
+    res.status(200).json({
+      status: 'success',
+      data: {
+        data: edited,
+      },
+    });
+  }
+);
+
 export default {
   getAllProducts,
   createProduct,
-  deleteAllProducts,
+  deleteAllDevProducts,
   getProductById,
   deleteOneProduct,
+  editProduct,
 };
