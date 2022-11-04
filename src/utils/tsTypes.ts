@@ -66,6 +66,10 @@ export interface IUser extends mongoose.Document {
   active: boolean;
   fullName: string;
   refreshToken: string;
+  passwordChangedAt: Date;
+  passwordResetToken: string | undefined;
+  passwordResetExpires: Date | undefined;
+  createPasswordResetToken(): string;
 }
 
 export interface INewUserEntry {

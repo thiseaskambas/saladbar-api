@@ -1,9 +1,11 @@
 import { Router } from 'express';
-import authControllers from '../controllers/authController';
+import authController from '../controllers/authController';
 
 const router = Router();
 
-router.post('/signup', authControllers.signUp);
-router.post('/login', authControllers.logIn);
+router.post('/signup', authController.signUp);
+router.post('/login', authController.logIn);
+router.post('/forgot-password', authController.forgotPassword);
+router.patch('/reset-password/:id/:resetToken', authController.resetPassword);
 
 export default router;
