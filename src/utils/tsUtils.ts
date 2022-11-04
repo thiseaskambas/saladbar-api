@@ -88,7 +88,8 @@ const isValidCartItemEntry = (item: any): item is ICartItemEntry => {
     !isString(item.product) ||
     isNaN(Number(item.quantity)) ||
     item.quantity < 1 ||
-    item.quantity > 999999
+    item.quantity > 999999 ||
+    (item.hasOwnProperty('discount') && isNaN(Number(item.discount)))
   ) {
     return false;
   }
@@ -99,7 +100,11 @@ const parseCartItemEntry = (item: unknown): ICartItemEntry => {
   if (!isValidCartItemEntry(item)) {
     throw new Error('Cart item not valid');
   }
-  return { product: item.product, quantity: item.quantity };
+  return {
+    product: item.product,
+    quantity: item.quantity,
+    discount: item.discount,
+  };
 };
 
 const parseCartItemsArr = (arr: unknown): ICartItemEntry[] => {

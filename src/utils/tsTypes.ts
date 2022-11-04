@@ -24,22 +24,29 @@ export interface ICartItem extends mongoose.Document {
   product: IProduct['_id'];
   quantity: number;
   itemPrice: number;
+  itemPriceBeforeDiscount: number;
+  totalPriceBeforeDiscount: number;
   totalPrice: number;
+  discount: number;
 }
 
 export interface ICart extends mongoose.Document {
   items: ICartItem[];
   createdAt: Date;
+  discount: number;
+  totalPriceBeforeDiscount: number;
   totalPrice: number;
 }
 
 export interface INewCartEntry {
   items: ICartItemEntry[];
+  discount?: number;
 }
 
 export interface ICartItemEntry {
   product: IProduct['_id'];
   quantity: number;
+  discount?: number;
 }
 
 export interface ILoginCredentials {
