@@ -91,7 +91,7 @@ const editProduct = catchAsync(
       }
     );
     if (!edited) {
-      return next(new Error('No document found with that ID')); //404
+      return next(new Error('No product found with that ID')); //404
     }
     res.status(200).json({
       status: 'success',
