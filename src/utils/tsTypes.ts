@@ -13,26 +13,40 @@ export interface INewProductEntry {
   productCourseType: ProductCourseType;
 }
 
+export interface IUpdateProductEntry {
+  name?: string;
+  price?: number;
+  productCourseType?: ProductCourseType;
+  active?: boolean;
+}
+
 export interface ICartItem extends mongoose.Document {
   product: IProduct['_id'];
   quantity: number;
   itemPrice: number;
+  itemPriceBeforeDiscount: number;
+  totalPriceBeforeDiscount: number;
   totalPrice: number;
+  discount: number;
 }
 
 export interface ICart extends mongoose.Document {
   items: ICartItem[];
   createdAt: Date;
+  discount: number;
+  totalPriceBeforeDiscount: number;
   totalPrice: number;
 }
 
 export interface INewCartEntry {
   items: ICartItemEntry[];
+  discount?: number;
 }
 
 export interface ICartItemEntry {
   product: IProduct['_id'];
   quantity: number;
+  discount?: number;
 }
 
 export interface ILoginCredentials {
@@ -56,7 +70,7 @@ export interface IReqQueryAfterBeforeDate {
   before: string;
 }
 
-export type Role = 'user' | 'admin';
+export type Role = 'user' | 'admin' | 'dev';
 
 export interface IUser extends mongoose.Document {
   username: string;

@@ -15,8 +15,16 @@ const cartItemSchema = new Schema<ICartItem>(
       min: 1,
       max: 999999,
     },
-    totalPrice: { type: Number, default: 0 },
     itemPrice: { type: Number, default: 0 },
+    itemPriceBeforeDiscount: { type: Number, default: 0 },
+    totalPrice: { type: Number, default: 0 },
+    totalPriceBeforeDiscount: { type: Number, default: 0 },
+    discount: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 100,
+    },
   },
   { _id: false }
 );
@@ -32,6 +40,13 @@ const cartSchema = new Schema<ICart>(
     totalPrice: {
       type: Number,
       default: 0,
+    },
+    totalPriceBeforeDiscount: { type: Number, default: 0 },
+    discount: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 100,
     },
   },
   {
@@ -49,8 +64,12 @@ cartItemSchema.pre('save', async function (next) {
   const self: ICartItem = this;
   const product: IProduct | null = await Product.findOne(self.product);
   if (product) {
-    self.totalPrice = product.price * self.quantity;
-    self.itemPrice = product.price;
+    self.itemPriceBeforeDiscount = product.price;
+    self.totalPriceBeforeDiscount = product.price * self.quantity;
+    self.itemPrice = parseFloat(
+      (product.price - (product.price * self.discount) / 100).toFixed(2)
+    );
+    self.totalPrice = parseFloat((self.itemPrice * self.quantity).toFixed(2));
     next();
   } else {
     throw new Error(`No products found with the given id : ${self.product} `);
@@ -62,7 +81,10 @@ cartSchema.pre('save', async function (next) {
   const totalCartPrice = self.items.reduce((acc, cv) => {
     return acc + cv.totalPrice;
   }, 0);
-  self.totalPrice = totalCartPrice;
+  self.totalPriceBeforeDiscount = totalCartPrice;
+  self.totalPrice = parseFloat(
+    (totalCartPrice - (totalCartPrice * self.discount) / 100).toFixed(2)
+  );
 
   next();
 });

@@ -13,8 +13,6 @@ router
   .route('/:id')
   .get(cartController.getCartById)
   .delete(cartController.deleteOneCart)
-  .patch((_req, res) => {
-    res.send('edit specific cart');
-  });
+  .patch(cartController.updateOneCart);
 
 export default router;

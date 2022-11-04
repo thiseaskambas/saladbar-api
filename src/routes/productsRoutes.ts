@@ -7,14 +7,12 @@ router
   .route('/')
   .get(productsController.getAllProducts)
   .post(productsController.createProduct)
-  .delete(productsController.deleteAllProducts);
+  .delete(productsController.deleteAllDevProducts); // Dev environment only
 
 router
   .route('/:id')
   .get(productsController.getProductById)
   .delete(productsController.deleteOneProduct)
-  .patch((_req, res) => {
-    res.send('edit specific product');
-  });
+  .patch(productsController.editProduct);
 
 export default router;

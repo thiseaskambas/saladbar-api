@@ -82,10 +82,29 @@ const deleteOneCart = catchAsync(
   }
 );
 
+//TODO: refactor based on front end implementation
+const updateOneCart = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const cartToUpdate = await Cart.findById(req.params.id);
+    if (!cartToUpdate) {
+      return next(new Error('No cart found with that ID')); //404
+    }
+    cartToUpdate.items = req.body.items;
+    const updated = await cartToUpdate.save();
+    res.status(200).json({
+      status: 'success',
+      data: {
+        data: updated,
+      },
+    });
+  }
+);
+
 export default {
   getAllCarts,
   createCart,
   deleteAllCarts,
   getCartById,
   deleteOneCart,
+  updateOneCart,
 };
