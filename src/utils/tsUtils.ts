@@ -1,3 +1,4 @@
+import { ObjectId } from 'mongoose';
 import {
   ICartItemEntry,
   ILoginCredentials,
@@ -5,6 +6,7 @@ import {
   INewProductEntry,
   INewUserEntry,
   IReqQueryAfterBeforeDate,
+  IUser,
   NodeEnv,
   ProductCourseType,
 } from './tsTypes';
@@ -151,9 +153,21 @@ const parseCartItemsArr = (arr: unknown): ICartItemEntry[] => {
   return mergedArr.map((el) => parseCartItemEntry(el));
 };
 
-export const toNewCartEntry = (object: any): INewCartEntry => {
+const isValidMongoId = (id: unknown): id is ObjectId => {
+  return new Object(id).toString() === id;
+};
+
+const parseUserId = (id: unknown): IUser['_id'] => {
+  if (!id || !isValidMongoId(id)) {
+    throw new Error('missing user id');
+  }
+  return id;
+};
+
+export const toNewCartEntry = (object: any, user: any): INewCartEntry => {
   const newCartEntry: INewCartEntry = {
     items: parseCartItemsArr(object.items),
+    createdBy: parseUserId(user.id),
   };
   return newCartEntry;
 };

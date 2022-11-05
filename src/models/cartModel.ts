@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import { ICart, ICartItem, IProduct } from '../utils/tsTypes';
+import { ICart, ICartItem, ILastEdited, IProduct } from '../utils/tsTypes';
 import Product from './productModel';
 
 const cartItemSchema = new Schema<ICartItem>(
@@ -29,6 +29,22 @@ const cartItemSchema = new Schema<ICartItem>(
   { _id: false }
 );
 
+const editedSchema = new Schema<ILastEdited>(
+  {
+    editDate: {
+      type: Date,
+      default: new Date(),
+      required: [true, 'a cart must have a date'],
+    },
+    editedBy: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: [true, 'a cart must be edited by an existing user'],
+    },
+  },
+  { _id: false }
+);
+
 const cartSchema = new Schema<ICart>(
   {
     items: [{ type: cartItemSchema, required: [true, 'cart cannot be empty'] }],
@@ -37,6 +53,12 @@ const cartSchema = new Schema<ICart>(
       default: new Date(),
       required: [true, 'a cart must have a date'],
     },
+    createdBy: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: [true, 'a cart must be created by an existing user'],
+    },
+    lastEdited: editedSchema,
     totalPrice: {
       type: Number,
       default: 0,

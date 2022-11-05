@@ -65,7 +65,6 @@ const userSchema = new Schema<IUser>(
 
 userSchema.pre('save', function (next) {
   if (!this.isModified('password') || this.isNew) return next();
-
   this.passwordChangedAt = new Date(Date.now() - 1000);
   next();
 });
