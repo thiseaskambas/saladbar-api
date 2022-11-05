@@ -29,7 +29,7 @@ const getAllCarts = catchAsync(async (req: Request, res: Response) => {
 });
 
 const createCart = catchAsync(async (req: Request, res: Response) => {
-  const cart: INewCartEntry = toNewCartEntry(req.body);
+  const cart: INewCartEntry = toNewCartEntry(req.body, req.user);
   const savedCart: ICart = await Cart.create(cart);
   res.status(201).json({
     status: 'success',
@@ -43,13 +43,15 @@ const createCart = catchAsync(async (req: Request, res: Response) => {
 const deleteAllCarts = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     if (req.body.deleteAll === 'true' && config.NODE_ENV === 'dev') {
-      await Cart.deleteMany({});
+      const { acknowledged } = await Cart.deleteMany({});
+      if (!acknowledged) {
+        return next(new Error('Could NOT delete'));
+      }
       res.status(204).json({
         status: 'success',
         data: null,
       });
     }
-    return next(new Error('Could NOT delete'));
   }
 );
 
@@ -90,6 +92,7 @@ const updateOneCart = catchAsync(
       return next(new Error('No cart found with that ID')); //404
     }
     cartToUpdate.items = req.body.items;
+    cartToUpdate.lastEdited = { editDate: new Date(), editedBy: req.user?.id };
     const updated = await cartToUpdate.save();
     res.status(200).json({
       status: 'success',

@@ -30,9 +30,16 @@ export interface ICartItem extends mongoose.Document {
   discount: number;
 }
 
+export interface ILastEdited {
+  editedBy: IUser['_id'];
+  editDate: Date;
+}
+
 export interface ICart extends mongoose.Document {
-  items: ICartItem[];
+  createdBy: IUser['_id'];
   createdAt: Date;
+  lastEdited?: ILastEdited;
+  items: ICartItem[];
   discount: number;
   totalPriceBeforeDiscount: number;
   totalPrice: number;
@@ -41,6 +48,7 @@ export interface ICart extends mongoose.Document {
 export interface INewCartEntry {
   items: ICartItemEntry[];
   discount?: number;
+  createdBy: IUser['_id'];
 }
 
 export interface ICartItemEntry {

@@ -9,6 +9,7 @@ import usersRouter from './routes/usersRoutes';
 import logoutRouter from './routes/logoutRoutes';
 import config from './utils/config';
 import cookieParser from 'cookie-parser';
+import { verifyJWT } from './middleware/verifyJWT';
 
 const app = express();
 app.use(express.json());
@@ -24,6 +25,6 @@ app.use('/api/v1/refresh', refreshTokenRouter);
 app.use('/api/v1/logout', logoutRouter);
 app.use('/api/v1/users', usersRouter);
 app.use('/api/v1/products', productsRouter);
-app.use('/api/v1/carts', cartRouter);
+app.use('/api/v1/carts', verifyJWT, cartRouter);
 
 export default app;
