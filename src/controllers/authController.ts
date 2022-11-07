@@ -4,14 +4,13 @@ import { sign } from 'jsonwebtoken';
 import crypto from 'crypto';
 import { catchAsync } from '../utils/catchAsync';
 import User from '../models/userModel';
-import { ILoginCredentials, INewUserEntry, IUser } from '../utils/tsTypes';
-import { toLoginCredentials, toNewUserEntry } from '../utils/tsUtils';
+import { ILoginCredentials, INewUserEntry, IUser } from '../tsTypes/';
+import { toLoginCredentials, toNewUserEntry } from '../tsUtils/parsers';
 import config from '../utils/config';
 import { sendPwdResetEmail } from '../utils/emailSender';
 
 const logIn = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    //TODO: type req.body
     const { email, password }: ILoginCredentials = toLoginCredentials(req.body);
     if (!email || !password) {
       return next(new Error('Please provide email and password!'));
@@ -40,6 +39,7 @@ const logIn = catchAsync(
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000,
       //NOTE: secure: true - only serves on https for Production
+      secure: config.NODE_ENV === 'prod',
     });
     res.status(200).json({
       accessToken,

@@ -1,14 +1,10 @@
 import { Response, Request, NextFunction } from 'express';
 
 import Cart from '../models/cartModel';
-import {
-  ICart,
-  INewCartEntry,
-  IReqQueryAfterBeforeDate,
-} from '../utils/tsTypes';
+import { ICart, INewCartEntry, IReqQueryAfterBeforeDate } from '../tsTypes';
 import { catchAsync } from '../utils/catchAsync';
 import config from '../utils/config';
-import { toNewCartEntry, toReqQueryAfterBefore } from '../utils/tsUtils';
+import { toNewCartEntry, toReqQueryAfterBefore } from '../tsUtils/parsers';
 
 //controllers for baseURL
 const getAllCarts = catchAsync(async (req: Request, res: Response) => {

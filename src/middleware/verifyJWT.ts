@@ -3,8 +3,7 @@ import { Response, Request, NextFunction } from 'express';
 import { catchAsync } from '../utils/catchAsync';
 import config from '../utils/config';
 import User from '../models/userModel';
-import { IUser } from '../utils/tsTypes';
-import { Error } from 'mongoose';
+import { IUser } from '../tsTypes';
 
 export const verifyJWT = catchAsync(
   async (req: Request, _res: Response, next: NextFunction) => {
