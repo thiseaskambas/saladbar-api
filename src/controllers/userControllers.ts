@@ -1,5 +1,5 @@
 import { Response, Request, NextFunction } from 'express';
-import { IUser } from '../utils/tsTypes';
+import { IUser } from '../tsTypes';
 import User from '../models/userModel';
 import { catchAsync } from '../utils/catchAsync';
 

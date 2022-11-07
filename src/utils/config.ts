@@ -1,11 +1,11 @@
 import * as dotenv from 'dotenv';
-import { NodeEnv } from './tsTypes';
+import { NodeEnv } from '../tsTypes/utils.types';
 import {
   parseEmailCredentials,
   parseNodeEnv,
   parseSecret,
   parseUri,
-} from './tsUtils';
+} from '../tsUtils/parsers';
 
 dotenv.config();
 

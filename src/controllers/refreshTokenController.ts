@@ -2,7 +2,7 @@ import { Response, Request, NextFunction } from 'express';
 import { verify, sign } from 'jsonwebtoken';
 import { catchAsync } from '../utils/catchAsync';
 
-import { IUser } from '../utils/tsTypes';
+import { IUser } from '../tsTypes';
 
 import config from '../utils/config';
 import User from '../models/userModel';

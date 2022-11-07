@@ -3,12 +3,8 @@ import { Request, Response, NextFunction } from 'express';
 import config from '../utils/config';
 import Product from '../models/productModel';
 import { catchAsync } from '../utils/catchAsync';
-import { toNewProductEntry } from '../utils/tsUtils';
-import {
-  INewProductEntry,
-  IProduct,
-  IUpdateProductEntry,
-} from '../utils/tsTypes';
+import { toNewProductEntry } from '../tsUtils/parsers';
+import { INewProductEntry, IProduct, IUpdateProductEntry } from '../tsTypes';
 
 //controllers for baseURL
 const getAllProducts = catchAsync(

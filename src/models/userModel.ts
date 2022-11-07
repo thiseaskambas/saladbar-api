@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 import { Schema, model } from 'mongoose';
 import validator from 'validator';
-import { IUser } from '../utils/tsTypes';
+import { IUser } from '../tsTypes';
 
 /* const tokenSchema = new Schema({
   _userId: {

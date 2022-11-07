@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-import { IProduct } from '../utils/tsTypes';
+import { IProduct } from '../tsTypes';
 
 const productSchema = new mongoose.Schema<IProduct>(
   {

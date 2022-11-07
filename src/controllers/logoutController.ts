@@ -1,6 +1,6 @@
 import { Response, Request, NextFunction } from 'express';
 import { catchAsync } from '../utils/catchAsync';
-import { IUser } from '../utils/tsTypes';
+import { IUser } from '../tsTypes';
 import User from '../models/userModel';
 
 const logoutHandler = catchAsync(

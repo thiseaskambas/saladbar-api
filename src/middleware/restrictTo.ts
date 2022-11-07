@@ -1,5 +1,5 @@
 import { Response, Request, NextFunction } from 'express';
-import { Role } from '../utils/tsTypes';
+import { Role } from '../tsTypes';
 
 export const restrictTo = (...roles: Role[]) => {
   return (req: Request, _res: Response, next: NextFunction) => {
