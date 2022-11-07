@@ -1,1 +1,1 @@
-export * from './typeguards.ts-utils';
+export * from './typeguards';

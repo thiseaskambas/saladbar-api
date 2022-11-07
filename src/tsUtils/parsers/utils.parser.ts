@@ -8,7 +8,7 @@ export const parseFormStringInput = (
   if (!input || !isString(input)) {
     throw new Error(`Missing or incorect ${description}`);
   }
-  return input;
+  return input.trim();
 };
 
 export const parseEmailCredentials = (cred: unknown): string => {
@@ -39,7 +39,7 @@ export const parseName = (name: unknown): string => {
   if (!name || !isString(name)) {
     throw new Error('Name is required and must be a string');
   }
-  return name;
+  return name.trim();
 };
 
 export const parsePrice = (price: unknown): number => {

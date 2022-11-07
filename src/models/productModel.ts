@@ -7,9 +7,9 @@ const ImageSchema = new mongoose.Schema<IProductImage>({
     type: String,
     required: true,
   },
-  filename: {
-    type: String,
-  },
+  filename: String,
+  secure_url: String,
+  public_id: String,
 });
 
 const productSchema = new mongoose.Schema<IProduct>(

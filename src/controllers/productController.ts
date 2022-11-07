@@ -1,11 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
-import { v2 as cloudinary } from 'cloudinary';
-
+import cloudinary, { options } from '../utils/cloudinary';
+import formidable from 'formidable';
 import config from '../utils/config';
 import Product from '../models/productModel';
 import { catchAsync } from '../utils/catchAsync';
 import { toNewProductEntry } from '../tsUtils/builders';
 import { INewProductEntry, IProduct, IUpdateProductEntry } from '../tsTypes';
+import { parseName } from '../tsUtils/parsers';
 
 //controllers for baseURL
 const getAllProducts = catchAsync(
@@ -22,19 +23,30 @@ const getAllProducts = catchAsync(
 
 const createProduct = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const product: INewProductEntry = toNewProductEntry(req.body, req.file);
-    const found: IProduct | null = await Product.findOne({
-      name: product.name,
-    });
-    if (found) {
-      return next(new Error('Product name already exists'));
-    }
-    const newProduct = await Product.create(product);
-    res.status(201).json({
-      status: 'success',
-      data: {
-        data: newProduct,
-      },
+    const form = formidable({});
+    form.parse(req, async (err, fields, files) => {
+      if (err) return next(err);
+      const found: IProduct | null = await Product.findOne({
+        name: parseName(fields.name),
+      });
+      if (found) {
+        return next(new Error('Product name already exists'));
+      }
+
+      const result = await cloudinary.uploader.upload(
+        (<any>files).image.filepath,
+        options
+      );
+      console.log({ result });
+      const product: INewProductEntry = toNewProductEntry(fields, result);
+
+      const newProduct = await Product.create(product);
+      res.status(201).json({
+        status: 'success',
+        data: {
+          data: newProduct,
+        },
+      });
     });
   }
 );

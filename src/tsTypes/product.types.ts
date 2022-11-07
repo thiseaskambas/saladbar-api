@@ -29,4 +29,6 @@ export interface IUpdateProductEntry {
 export interface IProductImage {
   url: string;
   filename: string;
+  public_id: string;
+  secure_url: string;
 }

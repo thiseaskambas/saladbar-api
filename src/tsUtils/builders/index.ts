@@ -26,12 +26,17 @@ export const toNewCartEntry = (object: any, user: any): INewCartEntry => {
   return newCartEntry;
 };
 
-export const toNewProductEntry = (body: any, file: any): INewProductEntry => {
+export const toNewProductEntry = (fields: any, file: any): INewProductEntry => {
   const newProductEntry: INewProductEntry = {
-    name: parseName(body.name),
-    price: parsePrice(body.price),
-    productCourseType: parseProductCourseType(body.productCourseType),
-    image: { url: file.path, filename: file.filename },
+    name: parseName(fields.name),
+    price: parsePrice(fields.price),
+    productCourseType: parseProductCourseType(fields.productCourseType),
+    image: {
+      url: file.url,
+      secure_url: file.secure_url,
+      filename: file.filename,
+      public_id: file.public_id,
+    },
   };
   return newProductEntry;
 };
