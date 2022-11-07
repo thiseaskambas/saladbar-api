@@ -5,7 +5,7 @@ import crypto from 'crypto';
 import { catchAsync } from '../utils/catchAsync';
 import User from '../models/userModel';
 import { ILoginCredentials, INewUserEntry, IUser } from '../tsTypes/';
-import { toLoginCredentials, toNewUserEntry } from '../tsUtils/parsers';
+import { toLoginCredentials, toNewUserEntry } from '../tsUtils/builders';
 import config from '../utils/config';
 import { sendPwdResetEmail } from '../utils/emailSender';
 

@@ -13,6 +13,7 @@ export interface INewProductEntry {
   name: string;
   price: number;
   productCourseType: ProductCourseType;
+  image: IProductImage;
 }
 export interface IProduct extends INewProductEntry, mongoose.Document {
   active: boolean;
@@ -23,4 +24,11 @@ export interface IUpdateProductEntry {
   price?: number;
   productCourseType?: ProductCourseType;
   active?: boolean;
+}
+
+export interface IProductImage {
+  url: string;
+  filename: string;
+  public_id: string;
+  secure_url: string;
 }

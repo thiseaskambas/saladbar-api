@@ -14,6 +14,7 @@ import {
   INewProductEntry,
   INewUserEntry,
   IReqQueryAfterBeforeDate,
+  ILoginCredentials,
 } from '../../tsTypes';
 
 export const toNewCartEntry = (object: any, user: any): INewCartEntry => {
@@ -25,11 +26,17 @@ export const toNewCartEntry = (object: any, user: any): INewCartEntry => {
   return newCartEntry;
 };
 
-export const toNewProductEntry = (object: any): INewProductEntry => {
+export const toNewProductEntry = (fields: any, file: any): INewProductEntry => {
   const newProductEntry: INewProductEntry = {
-    name: parseName(object.name),
-    price: parsePrice(object.price),
-    productCourseType: parseProductCourseType(object.productCourseType),
+    name: parseName(fields.name),
+    price: parsePrice(fields.price),
+    productCourseType: parseProductCourseType(fields.productCourseType),
+    image: {
+      url: file.url,
+      secure_url: file.secure_url,
+      filename: file.filename,
+      public_id: file.public_id,
+    },
   };
   return newProductEntry;
 };
@@ -54,4 +61,12 @@ export const toReqQueryAfterBefore = (obj: any): IReqQueryAfterBeforeDate => {
     before: parseQueryDate(obj.before),
   };
   return reqQuery;
+};
+
+export const toLoginCredentials = (obj: any): ILoginCredentials => {
+  const loginCredentials: ILoginCredentials = {
+    password: parseFormStringInput(obj.password, 'password'),
+    email: parseFormStringInput(obj.email, 'email'),
+  };
+  return loginCredentials;
 };

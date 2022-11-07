@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer';
 import config from './config';
-import { IUser } from '../tsTypes/utils.types';
+import { IUser } from '../tsTypes/';
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
