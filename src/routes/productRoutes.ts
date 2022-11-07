@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import productsController from '../controllers/productsController';
+import productsController from '../controllers/productController';
 import { upload } from '../utils/cloudinary';
 
 const router = Router();

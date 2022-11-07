@@ -1,6 +1,4 @@
 import { v2 as cloudinary } from 'cloudinary';
-import multer from 'multer';
-import { CloudinaryStorage, Options } from 'multer-storage-cloudinary';
 
 import config from '../utils/config';
 

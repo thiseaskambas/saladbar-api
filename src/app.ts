@@ -1,7 +1,7 @@
 import express from 'express';
 import mongoose from 'mongoose';
 
-import productsRouter from './routes/productsRoutes';
+import productsRouter from './routes/productRoutes';
 import cartRouter from './routes/cartRoutes';
 import authRouter from './routes/authRoutes';
 import refreshTokenRouter from './routes/refreshTokenRoutes';
