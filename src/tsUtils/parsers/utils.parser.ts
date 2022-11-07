@@ -1,13 +1,5 @@
 import { isString, isDateString, isValidMongoId } from '../typeguards';
-import { ILoginCredentials, IUser, NodeEnv } from '../../tsTypes';
-
-export const toLoginCredentials = (obj: any): ILoginCredentials => {
-  const loginCredentials: ILoginCredentials = {
-    password: parseFormStringInput(obj.password, 'password'),
-    email: parseFormStringInput(obj.email, 'email'),
-  };
-  return loginCredentials;
-};
+import { IUser, NodeEnv } from '../../tsTypes';
 
 export const parseFormStringInput = (
   input: unknown,

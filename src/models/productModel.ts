@@ -1,6 +1,16 @@
 import mongoose from 'mongoose';
 
-import { IProduct } from '../tsTypes';
+import { IProduct, IProductImage } from '../tsTypes';
+
+const ImageSchema = new mongoose.Schema<IProductImage>({
+  url: {
+    type: String,
+    required: true,
+  },
+  filename: {
+    type: String,
+  },
+});
 
 const productSchema = new mongoose.Schema<IProduct>(
   {
@@ -27,6 +37,9 @@ const productSchema = new mongoose.Schema<IProduct>(
       type: Boolean,
       required: [true, 'a product must be active true/false'],
       default: true,
+    },
+    image: {
+      type: ImageSchema,
     },
   },
   {

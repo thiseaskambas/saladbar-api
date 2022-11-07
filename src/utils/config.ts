@@ -31,6 +31,10 @@ const GMAIL_NODEMAILER_PSW: string = parseEmailCredentials(
 );
 const GMAIL_EMAIL: string = parseEmailCredentials(process.env.GMAIL_EMAIL);
 
+const CLOUDINARY_NAME = process.env.CLOUDINARY_NAME;
+const CLOUDINARY_KEY = process.env.CLOUDINARY_KEY;
+const CLOUDINARY_SECRET = process.env.CLOUDINARY_SECRET;
+
 export default {
   NODE_ENV,
   DB_URI,
@@ -39,4 +43,7 @@ export default {
   REFRESH_TOKEN_SECRET,
   GMAIL_NODEMAILER_PSW,
   GMAIL_EMAIL,
+  CLOUDINARY_NAME,
+  CLOUDINARY_KEY,
+  CLOUDINARY_SECRET,
 };

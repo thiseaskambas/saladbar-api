@@ -1,9 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
+import { v2 as cloudinary } from 'cloudinary';
 
 import config from '../utils/config';
 import Product from '../models/productModel';
 import { catchAsync } from '../utils/catchAsync';
-import { toNewProductEntry } from '../tsUtils/parsers';
+import { toNewProductEntry } from '../tsUtils/builders';
 import { INewProductEntry, IProduct, IUpdateProductEntry } from '../tsTypes';
 
 //controllers for baseURL
@@ -20,8 +21,14 @@ const getAllProducts = catchAsync(
 );
 
 const createProduct = catchAsync(
-  async (req: Request, res: Response, _next: NextFunction) => {
-    const product: INewProductEntry = toNewProductEntry(req.body);
+  async (req: Request, res: Response, next: NextFunction) => {
+    const product: INewProductEntry = toNewProductEntry(req.body, req.file);
+    const found: IProduct | null = await Product.findOne({
+      name: product.name,
+    });
+    if (found) {
+      return next(new Error('Product name already exists'));
+    }
     const newProduct = await Product.create(product);
     res.status(201).json({
       status: 'success',
@@ -36,7 +43,15 @@ const deleteAllDevProducts = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     if (req.body.deleteAll === 'true' && config.NODE_ENV === 'dev') {
       await Product.deleteMany({});
-      res.status(204).json({
+      try {
+        const result = await cloudinary.api.delete_resources_by_prefix(
+          'saladBarDev/'
+        );
+        console.log({ result });
+      } catch (err) {
+        console.log(err);
+      }
+      return res.status(204).json({
         status: 'success',
         data: null,
       });
@@ -52,6 +67,7 @@ const getProductById = catchAsync(
     if (!found) {
       return next(new Error('Could not find product'));
     }
+
     res.status(200).json({
       status: 'success',
       data: {
@@ -63,10 +79,11 @@ const getProductById = catchAsync(
 
 const deleteOneProduct = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const deleted = Product.findByIdAndDelete(req.params.id);
+    const deleted = await Product.findByIdAndDelete(req.params.id);
     if (!deleted) {
-      next(new Error('No product was found with given ID - no delete'));
+      return next(new Error('Error: no delete'));
     }
+    cloudinary.uploader.destroy(deleted.image.filename);
     res.status(204).json({
       status: 'success',
       data: null,

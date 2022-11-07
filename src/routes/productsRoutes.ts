@@ -1,12 +1,13 @@
 import { Router } from 'express';
 import productsController from '../controllers/productsController';
+import { upload } from '../utils/cloudinary';
 
 const router = Router();
 
 router
   .route('/')
   .get(productsController.getAllProducts)
-  .post(productsController.createProduct)
+  .post(upload.single('image'), productsController.createProduct)
   .delete(productsController.deleteAllDevProducts); // Dev environment only
 
 router

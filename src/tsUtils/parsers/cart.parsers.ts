@@ -50,9 +50,11 @@ export const parseCartItemsArr = (arr: unknown): ICartItemEntry[] => {
 };
 
 export const parseDiscount = (disc: unknown): number => {
-  if (!disc || isNaN(Number(disc))) {
+  if (!disc) {
+    return 0;
+  } else if (isNaN(Number(disc))) {
     throw new Error('Discount must be of type number');
-  } else if (disc > 100 || disc < 0) {
+  } else if (Number(disc) > 100 || Number(disc) < 0) {
     throw new Error('Discount must be between 0 and 100 (inclusive)');
   }
   return Number(disc);
