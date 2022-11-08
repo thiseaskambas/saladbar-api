@@ -24,6 +24,7 @@ export interface IUpdateProductEntry {
   price?: number;
   productCourseType?: ProductCourseType;
   active?: boolean;
+  image?: IProductImage;
 }
 
 export interface IProductImage {

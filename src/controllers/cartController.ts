@@ -74,11 +74,34 @@ const getCartById = catchAsync(
   }
 );
 
+const deactivateOneCart = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const deactivated = Cart.findByIdAndUpdate(
+      req.params.id,
+      {
+        active: false,
+      },
+      { new: true }
+    );
+    if (!deactivated) {
+      next(new Error('Could not deactivate'));
+    }
+    res.status(204).json({
+      status: 'success',
+      data: null,
+    });
+  }
+);
+
 const deleteOneCart = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const deleted = Cart.findByIdAndDelete(req.params.id);
+    const deleted = Cart.findOneAndDelete({ id: req.params.id, active: false });
     if (!deleted) {
-      next(new Error('No document was found with given ID - no delete'));
+      next(
+        new Error(
+          'No delete: make sure ID is correct and that the cart was deactivated'
+        )
+      );
     }
     res.status(204).json({
       status: 'success',
@@ -113,4 +136,5 @@ export default {
   getCartById,
   deleteOneCart,
   updateOneCart,
+  deactivateOneCart,
 };

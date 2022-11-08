@@ -33,12 +33,13 @@ const createProduct = catchAsync(
         return next(new Error('Product name already exists'));
       }
 
-      const result = await cloudinary.uploader.upload(
+      //TODO: refactor with try catch block
+      const savedImage = await cloudinary.uploader.upload(
         (<any>files).image.filepath,
         options
       );
-      console.log({ result });
-      const product: INewProductEntry = toNewProductEntry(fields, result);
+
+      const product: INewProductEntry = toNewProductEntry(fields, savedImage);
 
       const newProduct = await Product.create(product);
       res.status(201).json({
@@ -89,11 +90,38 @@ const getProductById = catchAsync(
   }
 );
 
+const deactivateOneProduct = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const deactivated = await Product.findByIdAndUpdate(
+      req.params.id,
+      {
+        active: false,
+      },
+      { new: true }
+    );
+    if (!deactivated) {
+      return next(new Error('Error: could not deactivate'));
+    }
+
+    res.status(204).json({
+      status: 'success',
+      data: null,
+    });
+  }
+);
+
 const deleteOneProduct = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const deleted = await Product.findByIdAndDelete(req.params.id);
+    const deleted = await Product.findOneAndDelete({
+      id: req.params.id,
+      active: false,
+    });
     if (!deleted) {
-      return next(new Error('Error: no delete'));
+      return next(
+        new Error(
+          'No delete: make sure ID is correct and that the product was deactivated'
+        )
+      );
     }
     cloudinary.uploader.destroy(deleted.image.filename);
     res.status(204).json({
@@ -105,24 +133,44 @@ const deleteOneProduct = catchAsync(
 
 const editProduct = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { name, price, productCourseType, active }: IUpdateProductEntry =
-      req.body;
-    const edited: IProduct | null = await Product.findByIdAndUpdate(
-      req.params.id,
-      { name, price, productCourseType, active },
-      {
-        new: true,
-        runValidators: true,
+    const form = formidable({});
+    form.parse(req, async (err, fields, files) => {
+      if (err) return next(err);
+      const productToUpdate: IProduct | null = await Product.findById(
+        req.params.id
+      );
+      if (!productToUpdate) {
+        return next(new Error('No product found with that ID')); //404
       }
-    );
-    if (!edited) {
-      return next(new Error('No product found with that ID')); //404
-    }
-    res.status(200).json({
-      status: 'success',
-      data: {
-        data: edited,
-      },
+
+      //TODO: refactor with try catch block
+      const savedImage = files.image
+        ? await cloudinary.uploader.upload((<any>files).image.filepath, options)
+        : null;
+
+      const entriesToBeSaved: IUpdateProductEntry = {
+        ...fields,
+        image: savedImage
+          ? {
+              url: savedImage.url,
+              secure_url: savedImage.secure_url,
+              filename: savedImage.filename,
+              public_id: savedImage.public_id,
+            }
+          : productToUpdate.image,
+      };
+
+      Object.assign(productToUpdate, entriesToBeSaved);
+      const updated = await productToUpdate.save();
+      if (updated && savedImage) {
+        cloudinary.uploader.destroy(productToUpdate.image.filename);
+      }
+      res.status(200).json({
+        status: 'success',
+        data: {
+          data: updated,
+        },
+      });
     });
   }
 );
@@ -134,4 +182,5 @@ export default {
   getProductById,
   deleteOneProduct,
   editProduct,
+  deactivateOneProduct,
 };
