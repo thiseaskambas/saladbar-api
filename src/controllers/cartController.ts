@@ -3,21 +3,16 @@ import { Response, Request, NextFunction } from 'express';
 import { catchAsync } from '../utils/catchAsync';
 import config from '../utils/config';
 import Cart from '../models/cartModel';
-import {
-  ICart,
-  INewCartEntry /* IReqQueryAfterBeforeDate */,
-} from '../tsTypes';
-import {
-  toNewCartEntry /* toReqQueryAfterBefore */,
-} from '../tsUtils/builders';
+import { ICart, INewCartEntry, IReqQueryAfterBeforeDate } from '../tsTypes';
+import { toNewCartEntry, toReqQueryAfterBefore } from '../tsUtils/builders';
 
 //controllers for baseURL
-const getAllCarts = catchAsync(async (_req: Request, res: Response) => {
-  // const reqQuery: IReqQueryAfterBeforeDate = toReqQueryAfterBefore(req.query);
-  // const options = reqQuery
-  //   ? { createdAt: { $gte: reqQuery.after, $lte: reqQuery.before } }
-  //   : {};
-  // console.log(options);
+const getAllCarts = catchAsync(async (req: Request, res: Response) => {
+  const reqQuery: IReqQueryAfterBeforeDate = toReqQueryAfterBefore(req.query);
+  const options = reqQuery
+    ? { createdAt: { $gte: reqQuery.after, $lte: reqQuery.before } }
+    : {};
+  console.log(options);
 
   const allCarts = await Cart.find().sort({ createdAt: 1 });
 
