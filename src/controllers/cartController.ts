@@ -8,13 +8,15 @@ import { toNewCartEntry, toReqQueryAfterBefore } from '../tsUtils/builders';
 
 //controllers for baseURL
 const getAllCarts = catchAsync(async (req: Request, res: Response) => {
-  const reqQuery: IReqQueryAfterBeforeDate = toReqQueryAfterBefore(req.query);
+  const reqQuery: IReqQueryAfterBeforeDate | null =
+    req.query.after && req.query.before
+      ? toReqQueryAfterBefore(req.query)
+      : null;
   const options = reqQuery
     ? { createdAt: { $gte: reqQuery.after, $lte: reqQuery.before } }
     : {};
-  console.log(options);
 
-  const allCarts = await Cart.find().sort({ createdAt: 1 });
+  const allCarts = await Cart.find(options).sort({ createdAt: 1 });
 
   res.status(200).json({
     status: 'success',
