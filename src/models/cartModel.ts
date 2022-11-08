@@ -1,4 +1,4 @@
-import { Schema, model, Query } from 'mongoose';
+import { Schema, model } from 'mongoose';
 import { ICart, ICartItem, ILastEdited, IProduct } from '../tsTypes';
 import Product from './productModel';
 
@@ -115,7 +115,7 @@ cartSchema.pre('save', async function (next) {
   next();
 });
 
-//NOTE: mongoose middleware to filter out 'inactive' carts - not sure if want to use it on EVERY find query
+//NOTE: mongoose middleware to filter out 'inactive' carts - not sure if want to use it on EVERY find query (import Query from mongoose to run)
 // cartSchema.pre<Query<ICart, ICart>>(/^find/, { query: true }, function (next) {
 //   this.find({ active: { $ne: false } });
 //   next();

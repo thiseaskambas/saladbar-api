@@ -22,10 +22,11 @@ mongoose
   .catch((err) => console.log(err));
 
 app.use('/api/v1/auth', authRouter);
+app.use(verifyJWT);
 app.use('/api/v1/refresh', refreshTokenRouter);
 app.use('/api/v1/logout', logoutRouter);
 app.use('/api/v1/users', usersRouter);
 app.use('/api/v1/products', productsRouter);
-app.use('/api/v1/carts', verifyJWT, cartRouter);
+app.use('/api/v1/carts', cartRouter);
 
 export default app;
