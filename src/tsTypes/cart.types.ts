@@ -13,6 +13,7 @@ export interface ICart extends Omit<INewCartEntry, 'items'>, mongoose.Document {
   lastEdited?: ILastEdited;
   totalPriceBeforeDiscount: number;
   totalPrice: number;
+  active: boolean;
 }
 
 export interface INewCartEntry {
