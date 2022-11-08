@@ -1,4 +1,4 @@
-import { Schema, model } from 'mongoose';
+import { Schema, model, Query } from 'mongoose';
 import { ICart, ICartItem, ILastEdited, IProduct } from '../tsTypes';
 import Product from './productModel';
 
@@ -70,6 +70,10 @@ const cartSchema = new Schema<ICart>(
       min: 0,
       max: 100,
     },
+    active: {
+      type: Boolean,
+      default: true,
+    },
   },
   {
     toJSON: {
@@ -110,6 +114,12 @@ cartSchema.pre('save', async function (next) {
 
   next();
 });
+
+//NOTE: mongoose middleware to filter out 'inactive' carts - not sure if want to use it on EVERY find query
+// cartSchema.pre<Query<ICart, ICart>>(/^find/, { query: true }, function (next) {
+//   this.find({ active: { $ne: false } });
+//   next();
+// });
 
 cartSchema.pre(/^find/, function (next) {
   this.populate({ path: 'items.product', select: 'name' });
