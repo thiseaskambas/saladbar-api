@@ -34,6 +34,7 @@ const createProduct = catchAsync(
       }
 
       //TODO: refactor with try catch block
+      //TODO:
       const savedImage = await cloudinary.uploader.upload(
         (<any>files).image.filepath,
         options

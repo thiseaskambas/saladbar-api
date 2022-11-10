@@ -1,6 +1,6 @@
 import express from 'express';
 import mongoose from 'mongoose';
-
+import cors from 'cors';
 import productsRouter from './routes/productRoutes';
 import cartRouter from './routes/cartRoutes';
 import authRouter from './routes/authRoutes';
@@ -9,9 +9,10 @@ import usersRouter from './routes/usersRoutes';
 import logoutRouter from './routes/logoutRoutes';
 import config from './utils/config';
 import cookieParser from 'cookie-parser';
-import { verifyJWT } from './middleware/verifyJWT';
+// import { verifyJWT } from './middleware/verifyJWT';
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -22,7 +23,7 @@ mongoose
   .catch((err) => console.log(err));
 
 app.use('/api/v1/auth', authRouter);
-app.use(verifyJWT);
+// app.use(verifyJWT);
 app.use('/api/v1/refresh', refreshTokenRouter);
 app.use('/api/v1/logout', logoutRouter);
 app.use('/api/v1/users', usersRouter);
