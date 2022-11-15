@@ -1,7 +1,7 @@
 import { Response, Request, NextFunction } from 'express';
-import { verify, sign } from 'jsonwebtoken';
 import { catchAsync } from '../utils/catchAsync';
-
+import { verify } from 'jwt-promisify';
+import { sign } from 'jsonwebtoken';
 import { IUser } from '../tsTypes';
 
 import config from '../utils/config';
@@ -20,9 +20,13 @@ const handleRefreshToken = catchAsync(
       return next(new Error('user not found')); // 403
     }
     const userForToken = { username: found.username, id: found._id };
-    const decoded = await verify(refreshToken, config.REFRESH_TOKEN_SECRET);
-    if (!decoded) {
-      return next(new Error('invalid token')); //403
+    let decodedToken;
+    try {
+      decodedToken = await verify(refreshToken, config.REFRESH_TOKEN_SECRET);
+      console.log(decodedToken);
+    } catch (err) {
+      console.log({ err });
+      return next(new Error('invalid token !!')); //403
     }
     const accessToken = sign(userForToken, config.ACCESS_TOKEN_SECRET, {
       expiresIn: '15m',

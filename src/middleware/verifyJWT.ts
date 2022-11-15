@@ -1,4 +1,4 @@
-import { verify } from 'jsonwebtoken';
+import { verify } from 'jwt-promisify';
 import { Response, Request, NextFunction } from 'express';
 import { catchAsync } from '../utils/catchAsync';
 import config from '../utils/config';
@@ -11,10 +11,13 @@ export const verifyJWT = catchAsync(
     if (!authHeader) return next(new Error('unauthorized')); //401
 
     const token = authHeader.split(' ')[1];
-    const decodedToken = await verify(token, config.ACCESS_TOKEN_SECRET);
-    if (!(<any>decodedToken)?.id) {
+    let decodedToken;
+    try {
+      decodedToken = await verify(token, config.ACCESS_TOKEN_SECRET);
+    } catch (err) {
       return next(new Error('invalid token')); //403
     }
+
     const currentUser: IUser | null = await User.findById(
       (<any>decodedToken).id
     );
