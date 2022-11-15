@@ -20,14 +20,16 @@ const handleRefreshToken = catchAsync(
       return next(new Error('user not found')); // 403
     }
     const userForToken = { username: found.username, id: found._id };
-    let decodedToken;
-    try {
-      decodedToken = await verify(refreshToken, config.REFRESH_TOKEN_SECRET);
-      console.log(decodedToken);
-    } catch (err) {
-      console.log({ err });
+
+    const decodedToken = await verify(
+      refreshToken,
+      config.REFRESH_TOKEN_SECRET
+    );
+
+    if (!decodedToken) {
       return next(new Error('invalid token !!')); //403
     }
+
     const accessToken = sign(userForToken, config.ACCESS_TOKEN_SECRET, {
       expiresIn: '15m',
     });
