@@ -37,7 +37,7 @@ const createProduct = catchAsync(
       //TODO:
       const savedImage = await cloudinary.uploader.upload(
         (<any>files).image.filepath,
-        options
+        { ...options, gravity: 'auto', height: 200, width: 200, crop: 'fill' }
       );
 
       const product: INewProductEntry = toNewProductEntry(fields, savedImage);

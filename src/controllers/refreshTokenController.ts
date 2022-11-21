@@ -33,7 +33,7 @@ const handleRefreshToken = catchAsync(
     const accessToken = sign(userForToken, config.ACCESS_TOKEN_SECRET, {
       expiresIn: '15m',
     });
-
+    console.log('refreshing....!', accessToken);
     res.status(200).json({
       accessToken,
       loggedUser: {
