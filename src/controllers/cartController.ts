@@ -28,6 +28,7 @@ const getAllCarts = catchAsync(async (req: Request, res: Response) => {
 });
 
 const createCart = catchAsync(async (req: Request, res: Response) => {
+  console.log(req.body);
   const cart: INewCartEntry = toNewCartEntry(req.body, req.user);
   const savedCart: ICart = await Cart.create(cart);
 

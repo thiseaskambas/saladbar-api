@@ -13,6 +13,7 @@ export const isProductCourseType = (param: any): param is ProductCourseType => {
 
 export const isValidCartItemEntry = (item: any): item is ICartItemEntry => {
   if (!(item.hasOwnProperty('product') && item.hasOwnProperty('quantity'))) {
+    console.log('not valid cart item entry');
     return false;
   }
   if (

@@ -34,7 +34,7 @@ export const toNewProductEntry = (fields: any, file: any): INewProductEntry => {
     image: {
       url: file.url,
       secure_url: file.secure_url,
-      filename: file.filename,
+      filename: file['original_filename'],
       public_id: file.public_id,
     },
   };

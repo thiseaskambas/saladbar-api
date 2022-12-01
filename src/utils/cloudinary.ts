@@ -12,7 +12,7 @@ cloudinary.config({
 export const options = {
   folder: config.NODE_ENV === 'prod' ? 'saladBar' : 'saladBarDev',
   use_filename: true,
-  unique_filename: false,
+  unique_filename: true,
   overwrite: true,
   allowedFormats: ['jpeg', 'png', 'jpg'],
 };

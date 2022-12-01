@@ -23,26 +23,44 @@ const getAllProducts = catchAsync(
 
 const createProduct = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const form = formidable({});
+    const form = formidable({
+      keepExtensions: true,
+      maxFiles: 1,
+      filename: (name, ext) => {
+        console.log({ ext });
+        return name;
+      },
+    });
     form.parse(req, async (err, fields, files) => {
-      if (err) return next(err);
+      if (err) {
+        console.log('error !', err);
+        return next(err);
+      }
       const found: IProduct | null = await Product.findOne({
         name: parseName(fields.name),
       });
       if (found) {
         return next(new Error('Product name already exists'));
       }
-
+      console.log({ files });
       //TODO: refactor with try catch block
-      //TODO:
       const savedImage = await cloudinary.uploader.upload(
         (<any>files).image.filepath,
-        { ...options, gravity: 'auto', height: 200, width: 200, crop: 'fill' }
+        {
+          ...options,
+          gravity: 'auto',
+          height: 100,
+          width: 200,
+          crop: 'fill',
+          //NOTE: https://console.cloudinary.com/documentation/webpurify_image_moderation_addon?customer_external_id=75e9038568056c9a66455c5ff1b728&frameless=1
+          moderation: 'webpurify',
+        }
       );
 
       const product: INewProductEntry = toNewProductEntry(fields, savedImage);
 
       const newProduct = await Product.create(product);
+      console.log({ newProduct });
       res.status(201).json({
         status: 'success',
         data: {
