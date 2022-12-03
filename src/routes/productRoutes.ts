@@ -13,7 +13,8 @@ router
 router
   .route('/:id')
   .get(productsController.getProductById)
-  .delete(restrictTo('admin', 'dev'), productsController.deactivateOneProduct)
+  // .delete(restrictTo('admin', 'dev'), productsController.deactivateOneProduct)
+  .delete(restrictTo('admin', 'dev'), productsController.deleteOneProduct)
   .patch(restrictTo('admin', 'dev'), productsController.editProduct);
 router
   .route('/:id/deactivated')

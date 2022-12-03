@@ -26,8 +26,7 @@ const createProduct = catchAsync(
     const form = formidable({
       keepExtensions: true,
       maxFiles: 1,
-      filename: (name, ext) => {
-        console.log({ ext });
+      filename: (name, _ext) => {
         return name;
       },
     });
@@ -42,20 +41,24 @@ const createProduct = catchAsync(
       if (found) {
         return next(new Error('Product name already exists'));
       }
-      console.log({ files });
-      //TODO: refactor with try catch block
-      const savedImage = await cloudinary.uploader.upload(
-        (<any>files).image.filepath,
-        {
-          ...options,
-          gravity: 'auto',
-          height: 100,
-          width: 200,
-          crop: 'fill',
-          //NOTE: https://console.cloudinary.com/documentation/webpurify_image_moderation_addon?customer_external_id=75e9038568056c9a66455c5ff1b728&frameless=1
-          moderation: 'webpurify',
-        }
-      );
+
+      let savedImage = null;
+      try {
+        savedImage = await cloudinary.uploader.upload(
+          (<any>files).image.filepath,
+          {
+            ...options,
+            gravity: 'auto',
+            height: 100,
+            width: 200,
+            crop: 'fill',
+            //NOTE: https://console.cloudinary.com/documentation/webpurify_image_moderation_addon?customer_external_id=75e9038568056c9a66455c5ff1b728&frameless=1
+            // moderation: 'webpurify', //NOTE: only 50 free requests per day
+          }
+        );
+      } catch (err) {
+        console.log(err);
+      }
 
       const product: INewProductEntry = toNewProductEntry(fields, savedImage);
 
@@ -131,18 +134,19 @@ const deactivateOneProduct = catchAsync(
 
 const deleteOneProduct = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const deleted = await Product.findOneAndDelete({
-      id: req.params.id,
-      active: false,
+    const deleted = await Product.findOneAndRemove({
+      _id: req.params.id,
+      // active: false,
     });
-    if (!deleted) {
+
+    if (deleted?.id !== req.params.id || !deleted) {
       return next(
         new Error(
           'No delete: make sure ID is correct and that the product was deactivated'
-        )
+        ) //404 error
       );
     }
-    cloudinary.uploader.destroy(deleted.image.filename);
+    cloudinary.uploader.destroy(deleted.image.public_id);
     res.status(204).json({
       status: 'success',
       data: null,
@@ -152,7 +156,13 @@ const deleteOneProduct = catchAsync(
 
 const editProduct = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const form = formidable({});
+    const form = formidable({
+      keepExtensions: true,
+      maxFiles: 1,
+      filename: (name, _ext) => {
+        return name;
+      },
+    });
     form.parse(req, async (err, fields, files) => {
       if (err) return next(err);
       const productToUpdate: IProduct | null = await Product.findById(
@@ -163,9 +173,26 @@ const editProduct = catchAsync(
       }
 
       //TODO: refactor with try catch block
-      const savedImage = files.image
-        ? await cloudinary.uploader.upload((<any>files).image.filepath, options)
-        : null;
+      let savedImage = null;
+      console.log({ files });
+      try {
+        savedImage = await cloudinary.uploader.upload(
+          (<any>files).image.filepath,
+          {
+            ...options,
+            gravity: 'auto',
+            height: 100,
+            width: 200,
+            crop: 'fill',
+            //NOTE: https://console.cloudinary.com/documentation/webpurify_image_moderation_addon?customer_external_id=75e9038568056c9a66455c5ff1b728&frameless=1
+            // moderation: 'webpurify', //NOTE: only 50req per day are free to purify images
+          }
+        );
+      } catch (err) {
+        console.log(err);
+      }
+
+      console.log({ savedImage });
 
       const entriesToBeSaved: IUpdateProductEntry = {
         ...fields,
@@ -173,11 +200,13 @@ const editProduct = catchAsync(
           ? {
               url: savedImage.url,
               secure_url: savedImage.secure_url,
-              filename: savedImage.filename,
+              filename: savedImage['original_filename'],
               public_id: savedImage.public_id,
             }
           : productToUpdate.image,
       };
+
+      console.log({ entriesToBeSaved });
 
       Object.assign(productToUpdate, entriesToBeSaved);
       const updated = await productToUpdate.save();

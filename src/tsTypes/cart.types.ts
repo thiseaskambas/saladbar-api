@@ -20,6 +20,7 @@ export interface INewCartEntry {
   items: ICartItemEntry[];
   discount: number;
   createdBy: IUser['_id'];
+  createdAt?: Date;
 }
 
 export interface ICartItem extends ICartItemEntry, mongoose.Document {

@@ -16,7 +16,10 @@ const getAllCarts = catchAsync(async (req: Request, res: Response) => {
     ? { createdAt: { $gte: reqQuery.after, $lte: reqQuery.before } }
     : {};
 
-  const allCarts = await Cart.find(options).sort({ createdAt: 1 });
+  //TODO: maybe move populating to mongoose MOdel
+  const allCarts = await Cart.find(options)
+    .populate({ path: 'createdBy', select: 'username fullname role -_id' })
+    .sort({ createdAt: 1 });
 
   res.status(200).json({
     status: 'success',
@@ -31,7 +34,10 @@ const createCart = catchAsync(async (req: Request, res: Response) => {
   console.log(req.body);
   const cart: INewCartEntry = toNewCartEntry(req.body, req.user);
   const savedCart: ICart = await Cart.create(cart);
-
+  savedCart.populate({
+    path: 'createdBy',
+    select: 'username fullname role -_id',
+  });
   res.status(201).json({
     status: 'success',
     data: {

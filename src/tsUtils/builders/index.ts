@@ -22,6 +22,7 @@ export const toNewCartEntry = (object: any, user: any): INewCartEntry => {
     items: parseCartItemsArr(object.items),
     createdBy: parseUserId(user.id),
     discount: parseDiscount(object.discount),
+    createdAt: new Date(),
   };
   return newCartEntry;
 };
