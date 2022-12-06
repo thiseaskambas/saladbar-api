@@ -34,7 +34,7 @@ const getAllCarts = catchAsync(async (req: Request, res: Response) => {
     .limit(pageOptions.limit)
     .populate({ path: 'createdBy', select: 'username fullname role -_id' })
     .sort({ createdAt: 1 });
-  const totalCarts = await Cart.countDocuments();
+  const totalCarts = await Cart.countDocuments(options);
 
   res.status(200).json({
     status: 'success',
