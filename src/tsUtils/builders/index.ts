@@ -3,7 +3,7 @@ import {
   parseUserId,
   parseDiscount,
   parseName,
-  parsePrice,
+  parseNumber,
   parseProductCourseType,
   parseFormStringInput,
   parseQueryDate,
@@ -15,6 +15,7 @@ import {
   INewUserEntry,
   IReqQueryAfterBeforeDate,
   ILoginCredentials,
+  IPaginationOptions,
 } from '../../tsTypes';
 
 export const toNewCartEntry = (object: any, user: any): INewCartEntry => {
@@ -30,7 +31,7 @@ export const toNewCartEntry = (object: any, user: any): INewCartEntry => {
 export const toNewProductEntry = (fields: any, file: any): INewProductEntry => {
   const newProductEntry: INewProductEntry = {
     name: parseName(fields.name),
-    price: parsePrice(fields.price),
+    price: parseNumber(fields.price),
     productCourseType: parseProductCourseType(fields.productCourseType),
     image: {
       url: file.url,
@@ -70,4 +71,11 @@ export const toLoginCredentials = (obj: any): ILoginCredentials => {
     email: parseFormStringInput(obj.email, 'email'),
   };
   return loginCredentials;
+};
+export const toPaginationOptions = (obj: any): IPaginationOptions => {
+  const pageOptions = {
+    page: parseInt(obj.page, 10) || 0,
+    limit: parseInt(obj.limit, 10) || 10,
+  };
+  return pageOptions;
 };

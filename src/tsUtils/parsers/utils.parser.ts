@@ -42,7 +42,7 @@ export const parseName = (name: unknown): string => {
   return name.trim();
 };
 
-export const parsePrice = (price: unknown): number => {
+export const parseNumber = (price: unknown): number => {
   if (!price || isNaN(Number(price))) {
     throw new Error('Number is required and must be of type "number"');
   }

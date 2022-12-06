@@ -3,8 +3,17 @@ import { Response, Request, NextFunction } from 'express';
 import { catchAsync } from '../utils/catchAsync';
 import config from '../utils/config';
 import Cart from '../models/cartModel';
-import { ICart, INewCartEntry, IReqQueryAfterBeforeDate } from '../tsTypes';
-import { toNewCartEntry, toReqQueryAfterBefore } from '../tsUtils/builders';
+import {
+  ICart,
+  INewCartEntry,
+  IPaginationOptions,
+  IReqQueryAfterBeforeDate,
+} from '../tsTypes';
+import {
+  toNewCartEntry,
+  toPaginationOptions,
+  toReqQueryAfterBefore,
+} from '../tsUtils/builders';
 
 //controllers for baseURL
 const getAllCarts = catchAsync(async (req: Request, res: Response) => {
@@ -12,20 +21,26 @@ const getAllCarts = catchAsync(async (req: Request, res: Response) => {
     req.query.after && req.query.before
       ? toReqQueryAfterBefore(req.query)
       : null;
+
   const options = reqQuery
     ? { createdAt: { $gte: reqQuery.after, $lte: reqQuery.before } }
     : {};
 
+  const pageOptions: IPaginationOptions = toPaginationOptions(req.query);
+
   //TODO: maybe move populating to mongoose MOdel
   const allCarts = await Cart.find(options)
+    .skip(pageOptions.page * pageOptions.limit)
+    .limit(pageOptions.limit)
     .populate({ path: 'createdBy', select: 'username fullname role -_id' })
     .sort({ createdAt: 1 });
+  const totalCarts = await Cart.countDocuments();
 
   res.status(200).json({
     status: 'success',
     data: {
       data: allCarts,
-      count: allCarts.length,
+      count: totalCarts,
     },
   });
 });
@@ -34,10 +49,11 @@ const createCart = catchAsync(async (req: Request, res: Response) => {
   console.log(req.body);
   const cart: INewCartEntry = toNewCartEntry(req.body, req.user);
   const savedCart: ICart = await Cart.create(cart);
-  savedCart.populate({
+  await savedCart.populate({
     path: 'createdBy',
     select: 'username fullname role -_id',
   });
+  console.log({ savedCart });
   res.status(201).json({
     status: 'success',
     data: {

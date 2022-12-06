@@ -9,3 +9,8 @@ export interface IReqQueryAfterBeforeDate {
   after: string;
   before: string;
 }
+
+export interface IPaginationOptions {
+  page: number;
+  limit: number;
+}
