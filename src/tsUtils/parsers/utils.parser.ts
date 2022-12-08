@@ -58,7 +58,7 @@ export const parseNodeEnv = (env: unknown): NodeEnv => {
 
 export const parseUserId = (id: unknown): IUser['_id'] => {
   if (!id || !isValidMongoId(id)) {
-    throw new Error('missing user id');
+    throw new Error('missing or incorrect user id');
   }
   return id;
 };

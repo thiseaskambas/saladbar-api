@@ -53,7 +53,7 @@ const createCart = catchAsync(async (req: Request, res: Response) => {
     path: 'createdBy',
     select: 'username fullname role _id',
   });
-  console.log({ savedCart });
+
   res.status(201).json({
     status: 'success',
     data: {
@@ -143,6 +143,12 @@ const updateOneCart = catchAsync(
     cartToUpdate.items = req.body.items;
     cartToUpdate.lastEdited = { editDate: new Date(), editedBy: req.user?.id };
     const updated = await cartToUpdate.save();
+    await updated.populate({
+      path: 'createdBy',
+      select: 'username fullname role _id',
+    });
+    await updated.populate({ path: 'items.product', select: 'name' });
+
     res.status(200).json({
       status: 'success',
       data: {
