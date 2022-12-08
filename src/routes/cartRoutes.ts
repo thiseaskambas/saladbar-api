@@ -14,7 +14,8 @@ router
   .route('/:id')
   .get(cartController.getCartById)
   .patch(cartController.updateOneCart)
-  .delete(cartController.deactivateOneCart);
+  // .delete(cartController.deactivateOneCart);
+  .delete(cartController.deleteOneCart);
 router
   .route('/:id/deactivated')
   .delete(restrictTo('admin', 'dev'), cartController.deleteOneCart);

@@ -32,7 +32,7 @@ const getAllCarts = catchAsync(async (req: Request, res: Response) => {
   const allCarts = await Cart.find(options)
     .skip(pageOptions.page * pageOptions.limit)
     .limit(pageOptions.limit)
-    .populate({ path: 'createdBy', select: 'username fullname role -_id' })
+    .populate({ path: 'createdBy', select: 'username fullname role _id' })
     .sort({ createdAt: 1 });
   const totalCarts = await Cart.countDocuments(options);
 
@@ -51,7 +51,7 @@ const createCart = catchAsync(async (req: Request, res: Response) => {
   const savedCart: ICart = await Cart.create(cart);
   await savedCart.populate({
     path: 'createdBy',
-    select: 'username fullname role -_id',
+    select: 'username fullname role _id',
   });
   console.log({ savedCart });
   res.status(201).json({
@@ -104,7 +104,7 @@ const deactivateOneCart = catchAsync(
       { new: true }
     );
     if (!deactivated) {
-      next(new Error('Could not deactivate'));
+      return next(new Error('Could not deactivate'));
     }
     res.status(204).json({
       status: 'success',
@@ -115,14 +115,17 @@ const deactivateOneCart = catchAsync(
 
 const deleteOneCart = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const deleted = Cart.findOneAndDelete({ id: req.params.id, active: false });
+    const deleted = await Cart.findOneAndDelete({
+      _id: req.params.id /* active: false */,
+    });
     if (!deleted) {
-      next(
+      return next(
         new Error(
           'No delete: make sure ID is correct and that the cart was deactivated'
         )
       );
     }
+    console.log('deleted !!!', deleted);
     res.status(204).json({
       status: 'success',
       data: null,

@@ -139,7 +139,7 @@ const deleteOneProduct = catchAsync(
       // active: false,
     });
 
-    if (deleted?.id !== req.params.id || !deleted) {
+    if (!deleted) {
       return next(
         new Error(
           'No delete: make sure ID is correct and that the product was deactivated'

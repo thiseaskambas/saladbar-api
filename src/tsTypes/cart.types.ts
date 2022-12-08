@@ -16,6 +16,13 @@ export interface ICart extends Omit<INewCartEntry, 'items'>, mongoose.Document {
   active: boolean;
 }
 
+export interface ICartItem extends ICartItemEntry, mongoose.Document {
+  itemPrice: number;
+  itemPriceBeforeDiscount: number;
+  totalPriceBeforeDiscount: number;
+  totalPrice: number;
+}
+
 export interface INewCartEntry {
   items: ICartItemEntry[];
   discount: number;
@@ -23,12 +30,6 @@ export interface INewCartEntry {
   createdAt?: Date;
 }
 
-export interface ICartItem extends ICartItemEntry, mongoose.Document {
-  itemPrice: number;
-  itemPriceBeforeDiscount: number;
-  totalPriceBeforeDiscount: number;
-  totalPrice: number;
-}
 export interface ICartItemEntry {
   product: IProduct['_id'];
   quantity: number;
