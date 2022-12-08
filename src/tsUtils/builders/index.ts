@@ -10,7 +10,7 @@ import {
 } from '../parsers';
 
 import {
-  INewCartEntry,
+  ICartToBeSaved,
   INewProductEntry,
   INewUserEntry,
   IReqQueryAfterBeforeDate,
@@ -18,14 +18,14 @@ import {
   IPaginationOptions,
 } from '../../tsTypes';
 
-export const toNewCartEntry = (object: any, user: any): INewCartEntry => {
-  const newCartEntry: INewCartEntry = {
+export const toCartToBeSaved = (object: any, user: any): ICartToBeSaved => {
+  const cartToBeSaved: ICartToBeSaved = {
     items: parseCartItemsArr(object.items),
     createdBy: parseUserId(user.id),
     discount: parseDiscount(object.discount),
     createdAt: new Date(),
   };
-  return newCartEntry;
+  return cartToBeSaved;
 };
 
 export const toNewProductEntry = (fields: any, file: any): INewProductEntry => {

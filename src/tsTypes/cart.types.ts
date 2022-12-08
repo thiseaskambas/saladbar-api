@@ -7,7 +7,9 @@ export interface ILastEdited {
   editDate: Date;
 }
 
-export interface ICart extends Omit<INewCartEntry, 'items'>, mongoose.Document {
+export interface ICart
+  extends Omit<ICartToBeSaved, 'items'>,
+    mongoose.Document {
   items: ICartItem[];
   createdAt: Date;
   lastEdited?: ILastEdited;
@@ -16,21 +18,21 @@ export interface ICart extends Omit<INewCartEntry, 'items'>, mongoose.Document {
   active: boolean;
 }
 
-export interface ICartItem extends ICartItemEntry, mongoose.Document {
+export interface ICartItem extends ICartItemTobeSaved, mongoose.Document {
   itemPrice: number;
   itemPriceBeforeDiscount: number;
   totalPriceBeforeDiscount: number;
   totalPrice: number;
 }
 
-export interface INewCartEntry {
-  items: ICartItemEntry[];
+export interface ICartToBeSaved {
+  items: ICartItemTobeSaved[];
   discount: number;
   createdBy: IUser['_id'];
   createdAt?: Date;
 }
 
-export interface ICartItemEntry {
+export interface ICartItemTobeSaved {
   product: IProduct['_id'];
   quantity: number;
   discount: number;

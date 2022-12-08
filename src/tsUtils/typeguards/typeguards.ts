@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongoose';
-import { ProductCourseType, ICartItemEntry } from '../../tsTypes';
+import { ProductCourseType, ICartItemTobeSaved } from '../../tsTypes';
 
 //The isSomething functions are a so-called type guards which have a type predicate as the return type
 
@@ -11,7 +11,7 @@ export const isProductCourseType = (param: any): param is ProductCourseType => {
   return Object.values(ProductCourseType).includes(param);
 };
 
-export const isValidCartItemEntry = (item: any): item is ICartItemEntry => {
+export const isValidCartItemEntry = (item: any): item is ICartItemTobeSaved => {
   if (!(item.hasOwnProperty('product') && item.hasOwnProperty('quantity'))) {
     console.log('not valid cart item entry');
     return false;

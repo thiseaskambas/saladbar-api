@@ -5,12 +5,12 @@ import config from '../utils/config';
 import Cart from '../models/cartModel';
 import {
   ICart,
-  INewCartEntry,
+  ICartToBeSaved,
   IPaginationOptions,
   IReqQueryAfterBeforeDate,
 } from '../tsTypes';
 import {
-  toNewCartEntry,
+  toCartToBeSaved,
   toPaginationOptions,
   toReqQueryAfterBefore,
 } from '../tsUtils/builders';
@@ -47,7 +47,7 @@ const getAllCarts = catchAsync(async (req: Request, res: Response) => {
 
 const createCart = catchAsync(async (req: Request, res: Response) => {
   console.log(req.body);
-  const cart: INewCartEntry = toNewCartEntry(req.body, req.user);
+  const cart: ICartToBeSaved = toCartToBeSaved(req.body, req.user);
   const savedCart: ICart = await Cart.create(cart);
   await savedCart.populate({
     path: 'createdBy',
