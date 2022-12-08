@@ -1,7 +1,7 @@
 import { isValidCartItemEntry } from '../typeguards';
-import { ICartItemEntry } from '../../tsTypes';
+import { ICartItemTobeSaved } from '../../tsTypes';
 
-export const parseCartItemEntry = (item: unknown): ICartItemEntry => {
+export const parseCartItemEntry = (item: unknown): ICartItemTobeSaved => {
   if (!isValidCartItemEntry(item)) {
     console.log(item);
     throw new Error('Cart item not valid');
@@ -13,7 +13,7 @@ export const parseCartItemEntry = (item: unknown): ICartItemEntry => {
   };
 };
 
-export const parseCartItemsArr = (arr: unknown): ICartItemEntry[] => {
+export const parseCartItemsArr = (arr: unknown): ICartItemTobeSaved[] => {
   if (!arr || !(arr instanceof Array)) {
     throw new Error('Cart items are not  inside an array');
   }
