@@ -41,6 +41,8 @@ const handleRefreshToken = catchAsync(
         name: found.fullName,
         id: found._id,
         role: found.role,
+        email: found.email,
+        fullName: found.fullName,
       },
     });
   }

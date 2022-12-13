@@ -42,4 +42,26 @@ const findMe = catchAsync(
   }
 );
 
-export default { findAllUsers, findOneUser, findMe };
+const editUser = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userToUpdate = await User.findById(req.params.id).select(
+      '-passwordHash -refreshToken'
+    );
+    if (!userToUpdate) {
+      return next(new Error('No User found with that ID')); //404
+    }
+    userToUpdate.role = req.body.role;
+    userToUpdate.fullName = req.body.fullName;
+    userToUpdate.username = req.body.username;
+    const updated = await userToUpdate.save();
+    console.log({ updated });
+    res.status(200).json({
+      status: 'success',
+      data: {
+        data: updated,
+      },
+    });
+  }
+);
+
+export default { findAllUsers, findOneUser, findMe, editUser };
