@@ -4,7 +4,7 @@ import User from '../models/userModel';
 import { catchAsync } from '../utils/catchAsync';
 
 const findAllUsers = catchAsync(async (_req: Request, res: Response) => {
-  const foundUsers: IUser[] = await User.find({});
+  const foundUsers: IUser[] = await User.find().select('-refreshToken');
   res.status(200).json({
     status: 'success',
     data: {
