@@ -1,7 +1,9 @@
 import { Response, Request, NextFunction } from 'express';
+
 import { IUser } from '../tsTypes';
 import User from '../models/userModel';
 import { catchAsync } from '../utils/catchAsync';
+import { toUpdateUserEntry } from '../tsUtils/builders';
 
 const findAllUsers = catchAsync(async (_req: Request, res: Response) => {
   const foundUsers: IUser[] = await User.find().select('-refreshToken');
@@ -44,21 +46,27 @@ const findMe = catchAsync(
 
 const editUser = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const userToUpdate = await User.findById(req.params.id).select(
-      '-passwordHash -refreshToken'
-    );
-    if (!userToUpdate) {
-      return next(new Error('No User found with that ID')); //404
+    if (req.body.password || req.body.passwordConfirm) {
+      return next(
+        new Error(
+          'This route is not for password updates. Please use /update-password.'
+        )
+      );
     }
-    userToUpdate.role = req.body.role;
-    userToUpdate.fullName = req.body.fullName;
-    userToUpdate.username = req.body.username;
-    const updated = await userToUpdate.save();
-    console.log({ updated });
+    console.log('editing user');
+    const newValues = toUpdateUserEntry(req.body);
+    const userToUpdate = await User.findByIdAndUpdate(
+      req.params.id,
+      newValues,
+      { new: true }
+    ).select('-passwordHash -refreshToken');
+    if (!userToUpdate) {
+      return next(new Error('Could not update')); //500?
+    }
     res.status(200).json({
       status: 'success',
       data: {
-        data: updated,
+        data: userToUpdate,
       },
     });
   }

@@ -38,7 +38,6 @@ const handleRefreshToken = catchAsync(
       accessToken,
       loggedUser: {
         username: found.username,
-        name: found.fullName,
         id: found._id,
         role: found.role,
         email: found.email,

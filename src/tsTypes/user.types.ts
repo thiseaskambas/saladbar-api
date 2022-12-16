@@ -22,3 +22,12 @@ export interface INewUserEntry {
   fullName: string;
   passwordConfirm: string;
 }
+
+export interface IUpdateUserEntry {
+  username?: string;
+  email?: string;
+  fullName?: string;
+  password?: string;
+  role?: Role;
+  passwordConfirm?: string;
+}

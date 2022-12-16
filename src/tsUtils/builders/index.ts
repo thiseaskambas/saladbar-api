@@ -16,6 +16,7 @@ import {
   IReqQueryAfterBeforeDate,
   ILoginCredentials,
   IPaginationOptions,
+  IUpdateUserEntry,
 } from '../../tsTypes';
 
 export const toCartToBeSaved = (object: any, user: any): ICartToBeSaved => {
@@ -47,14 +48,26 @@ export const toNewUserEntry = (obj: any): INewUserEntry => {
   const newUserEntry = {
     username: parseFormStringInput(obj.username, 'username'),
     email: parseFormStringInput(obj.email, 'email'),
-    password: parseFormStringInput(obj.password, 'password'),
     fullName: parseFormStringInput(obj.fullName, 'full name'),
+    //TODO: Parse and compare passwords
+    password: parseFormStringInput(obj.password, 'password'),
     passwordConfirm: parseFormStringInput(
       obj.passwordConfirm,
       'confirmation password'
     ),
   };
   return newUserEntry;
+};
+
+export const toUpdateUserEntry = (obj: any): IUpdateUserEntry => {
+  const updateUserEntry = {} as IUpdateUserEntry;
+  //TODO: Parse role
+  if (obj.role) updateUserEntry.role = obj.role;
+  if (obj.fullName)
+    updateUserEntry.fullName = parseFormStringInput(obj.fullName, 'full name');
+  if (obj.username)
+    updateUserEntry.username = parseFormStringInput(obj.username, 'username');
+  return updateUserEntry;
 };
 
 export const toReqQueryAfterBefore = (obj: any): IReqQueryAfterBeforeDate => {

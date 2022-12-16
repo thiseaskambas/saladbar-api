@@ -45,7 +45,6 @@ const logIn = catchAsync(
       accessToken,
       loggedUser: {
         username: found.username,
-        name: found.fullName,
         id: found._id,
         role: found.role,
         email: found.email,
@@ -143,4 +142,50 @@ const resetPassword = catchAsync(
   }
 );
 
-export default { logIn, signUp, forgotPassword, resetPassword };
+const updatePassword = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    console.log('updating pwd', req.body.oldPassword);
+    const found = await User.findById(req.user.id).select('+passwordHash');
+    if (!found) {
+      return next(new Error('User not found'));
+    }
+    const oldPasswordCorrect = await bcrypt.compare(
+      req.body.oldPassword,
+      found.passwordHash
+    );
+    if (req.body.password !== req.body.passwordConfirm || !oldPasswordCorrect) {
+      return next(new Error('Password confirmation failled'));
+    }
+    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+    found.passwordHash = hashedPassword;
+
+    const userForToken = { username: found.username, id: found._id };
+    const accessToken = sign(userForToken, config.ACCESS_TOKEN_SECRET, {
+      expiresIn: '15m',
+    });
+    const refreshToken = sign(userForToken, config.REFRESH_TOKEN_SECRET, {
+      expiresIn: '1d',
+    });
+
+    found.refreshToken = refreshToken;
+    await found.save();
+    res.cookie('jwt', refreshToken, {
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000,
+      //NOTE: secure: true - only serves on https for Production
+      secure: config.NODE_ENV === 'prod',
+    });
+    res.status(200).json({
+      accessToken,
+      loggedUser: {
+        username: found.username,
+        id: found._id,
+        role: found.role,
+        email: found.email,
+        fullName: found.fullName,
+      },
+    });
+  }
+);
+
+export default { logIn, signUp, forgotPassword, resetPassword, updatePassword };
