@@ -9,6 +9,7 @@ import { INewProductEntry, IProduct, IUpdateProductEntry } from '../tsTypes';
 // import { parseName } from '../tsUtils/parsers';
 import { AppError } from '../utils/appError';
 import { ErrorStatusCode } from '../tsTypes/error.types';
+import Cart from '../models/cartModel';
 
 //controllers for baseURL
 const getAllProducts = catchAsync(
@@ -153,9 +154,23 @@ const deactivateOneProduct = catchAsync(
 
 const deleteOneProduct = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
+    const foundCart = await Cart.findOne({ 'items.product': req.params.id });
+    console.log({ foundCart });
+    if (foundCart) {
+      return next(
+        new AppError({
+          name: 'UsedProduct',
+          statusCode: ErrorStatusCode.BAD_REQUEST,
+          message: `Warning: the product you are trying to delete is present in a cart created on ${foundCart.createdAt}`,
+          additionalInfo: {
+            foundCart,
+          },
+        })
+      );
+    }
     const deleted = await Product.findOneAndRemove({
       _id: req.params.id,
-      // active: false,
+      active: false,
     });
 
     if (!deleted) {
@@ -163,7 +178,7 @@ const deleteOneProduct = catchAsync(
         new AppError({
           message:
             'No delete: make sure ID is correct and that the product was deactivated',
-          statusCode: ErrorStatusCode.INTERNAL_SERVER_ERROR, // OR INTERNAL ?
+          statusCode: ErrorStatusCode.BAD_REQUEST, // OR INTERNAL ?
         })
       );
     }

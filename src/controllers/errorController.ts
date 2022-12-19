@@ -23,16 +23,20 @@ const unknownRouteHandler = (
 };
 
 const sendErrorDev = (err: AppError, res: Response) => {
+  console.log('🟠 ERROR ---> ', err);
   res.status(err.statusCode).json({
+    statusCode: err.statusCode,
     error: err,
     name: err.name,
     message: err.message,
     stack: err.stack,
+    additionalInfo: err?.additionalInfo,
   });
 };
 
 const sendErrorProd = (err: AppError, res: Response) => {
   if (err.isOperational) {
+    console.log('🟢 ERROR ---> ', err);
     //NOTE: Operational trusted errors
     res.status(err.statusCode).json({
       name: err.name,
@@ -83,13 +87,9 @@ const errorHandler = (
   res: Response,
   next: NextFunction
 ) => {
-  console.log('🚧 ERROR HANDLER');
-
   if (config.NODE_ENV === 'dev') {
     sendErrorDev(err, res);
   } else if (config.NODE_ENV === 'prod') {
-    console.log('🚧 💻 ERROR HANDLER DEV ENV');
-
     let errorCopy = Object.assign(err);
 
     if (errorCopy.name === 'CastError') {

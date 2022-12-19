@@ -178,7 +178,6 @@ const resetPassword = catchAsync(
 
 const updatePassword = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    console.log('updating pwd', req.body.oldPassword);
     const found = await User.findById(req.user.id).select('+passwordHash');
     if (!found) {
       return next(
