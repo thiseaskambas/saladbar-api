@@ -15,7 +15,7 @@ export const sendPwdResetEmail = async (userObj: IUser, link: string) => {
     from: config.GMAIL_EMAIL,
     to: userObj.email,
     subject: 'SALAD BAR: Reset your password',
-    text: `$To resest your password follow this link : ${link}`,
+    text: `To resest your password follow this link : ${link}`,
   };
   try {
     await transporter.sendMail(mailOptions);

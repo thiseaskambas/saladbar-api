@@ -8,12 +8,19 @@ import { ILoginCredentials, INewUserEntry, IUser } from '../tsTypes/';
 import { toLoginCredentials, toNewUserEntry } from '../tsUtils/builders';
 import config from '../utils/config';
 import { sendPwdResetEmail } from '../utils/emailSender';
+import { AppError } from '../utils/appError';
+import { ErrorStatusCode } from '../tsTypes/error.types';
 
 const logIn = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { email, password }: ILoginCredentials = toLoginCredentials(req.body);
     if (!email || !password) {
-      return next(new Error('Please provide email and password!'));
+      return next(
+        new AppError({
+          message: 'Please provide email and password',
+          statusCode: ErrorStatusCode.BAD_REQUEST,
+        })
+      );
     }
     const found: IUser | null = await User.findOne({ email });
 
@@ -23,7 +30,13 @@ const logIn = catchAsync(
         : await bcrypt.compare(password, found.passwordHash);
 
     if (!found || !passwordCorrect) {
-      return next(new Error('Wrong email or username'));
+      console.log('not found 404');
+      return next(
+        new AppError({
+          message: 'Wrong email or username',
+          statusCode: ErrorStatusCode.UNAUTHORIZED,
+        })
+      );
     }
     const userForToken = { username: found.username, id: found._id };
     const accessToken = sign(userForToken, config.ACCESS_TOKEN_SECRET, {
@@ -58,13 +71,23 @@ const signUp = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const input: INewUserEntry = toNewUserEntry(req.body);
     if (input.password !== input.passwordConfirm) {
-      return next(new Error('Password confirmation failled'));
+      return next(
+        new AppError({
+          message: 'Password confirmation not correct',
+          statusCode: ErrorStatusCode.BAD_REQUEST,
+        })
+      );
     }
     const found = await User.findOne({
       $or: [{ username: input.username }, { email: input.email }],
     });
     if (found) {
-      return next(new Error('Username or email already exists'));
+      return next(
+        new AppError({
+          message: 'Username and/or email already exists',
+          statusCode: ErrorStatusCode.CONFLICT,
+        })
+      );
     }
     const hashedPassword = await bcrypt.hash(input.password, 10);
 
@@ -86,7 +109,10 @@ const forgotPassword = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const user = await User.findOne({ email: req.body.email });
     if (!user) {
-      return next(new Error('There is no user with email address.')); //404
+      return new AppError({
+        message: 'The email address you entered was not found in our database',
+        statusCode: ErrorStatusCode.NOT_FOUND,
+      });
     }
     const resetToken = user.createPasswordResetToken();
     await user.save();
@@ -122,11 +148,19 @@ const resetPassword = catchAsync(
     });
 
     if (!user) {
-      return next(new Error('Token is invalid or has expired')); //400
+      return next(
+        new AppError({
+          message: 'Token is invalid or has expired',
+          statusCode: ErrorStatusCode.BAD_REQUEST,
+        })
+      );
     }
     const { password, passwordConfirm } = req.body;
     if (password !== passwordConfirm) {
-      return new Error('Password confirmation failled');
+      return new AppError({
+        message: 'Password confirmation failled',
+        statusCode: ErrorStatusCode.BAD_REQUEST,
+      });
     }
     const hashedPassword = await bcrypt.hash(password, 10);
     user.passwordHash = hashedPassword;
@@ -147,14 +181,23 @@ const updatePassword = catchAsync(
     console.log('updating pwd', req.body.oldPassword);
     const found = await User.findById(req.user.id).select('+passwordHash');
     if (!found) {
-      return next(new Error('User not found'));
+      return next(
+        new AppError({
+          statusCode: ErrorStatusCode.NOT_FOUND,
+          message:
+            "A user was not found with the provided ID, make sure you haven't deleted your account",
+        })
+      );
     }
     const oldPasswordCorrect = await bcrypt.compare(
       req.body.oldPassword,
       found.passwordHash
     );
     if (req.body.password !== req.body.passwordConfirm || !oldPasswordCorrect) {
-      return next(new Error('Password confirmation failled'));
+      return new AppError({
+        message: 'Password confirmation failled',
+        statusCode: ErrorStatusCode.BAD_REQUEST,
+      });
     }
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
     found.passwordHash = hashedPassword;

@@ -17,6 +17,7 @@ const productSchema = new mongoose.Schema<IProduct>(
     name: {
       type: String,
       required: [true, 'Products must have a name'],
+      unique: true,
     },
 
     price: {

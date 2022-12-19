@@ -1,10 +1,14 @@
 import { isValidCartItemEntry } from '../typeguards';
 import { ICartItemTobeSaved } from '../../tsTypes';
+import { AppError } from '../../utils/appError';
+import { ErrorStatusCode } from '../../tsTypes/error.types';
 
 export const parseCartItemEntry = (item: unknown): ICartItemTobeSaved => {
   if (!isValidCartItemEntry(item)) {
-    console.log(item);
-    throw new Error('Cart item not valid');
+    throw new AppError({
+      message: 'Cart item not valid',
+      statusCode: ErrorStatusCode.BAD_REQUEST,
+    });
   }
   return {
     product: item.product,
@@ -15,7 +19,10 @@ export const parseCartItemEntry = (item: unknown): ICartItemTobeSaved => {
 
 export const parseCartItemsArr = (arr: unknown): ICartItemTobeSaved[] => {
   if (!arr || !(arr instanceof Array)) {
-    throw new Error('Cart items are not  inside an array');
+    throw new AppError({
+      message: 'Cart items are not  inside an array',
+      statusCode: ErrorStatusCode.BAD_REQUEST,
+    });
   }
   //NOTE: merging items in cart that correspond to same product (better implementation on the FE expected)
   const mergedArr: any[] = arr.reduce((acc: any[], curr: any) => {
@@ -53,9 +60,16 @@ export const parseDiscount = (disc: unknown): number => {
   if (!disc) {
     return 0;
   } else if (isNaN(Number(disc))) {
-    throw new Error('Discount must be of type number');
+    throw new AppError({
+      message: 'Discount must be of type number',
+      statusCode: ErrorStatusCode.BAD_REQUEST,
+    });
   } else if (Number(disc) > 100 || Number(disc) < 0) {
-    throw new Error('Discount must be between 0 and 100 (inclusive)');
+    throw new AppError({
+      message: 'Discount must be between 0 and 100 (inclusive)',
+      additionalInfo: 'Discount must be between 0 and 100 (inclusive)',
+      statusCode: ErrorStatusCode.BAD_REQUEST,
+    });
   }
   return Number(disc);
 };
