@@ -214,8 +214,6 @@ const editProduct = catchAsync(
               // moderation: 'webpurify', //NOTE: only 50req per day are free to purify images
             }
           );
-          //TODO: verify if images are destroyed
-          cloudinary.uploader.destroy(productToUpdate.image.public_id);
         } catch (err) {
           return next(
             new AppError({
@@ -226,6 +224,7 @@ const editProduct = catchAsync(
         }
       }
 
+      const prevImage = Object.create(productToUpdate.image);
       const entriesToBeSaved: IUpdateProductEntry = {
         ...fields,
         image: savedImage
@@ -240,9 +239,15 @@ const editProduct = catchAsync(
 
       Object.assign(productToUpdate, entriesToBeSaved);
       const updated = await productToUpdate.save();
+
       if (updated && savedImage) {
-        cloudinary.uploader.destroy(productToUpdate.image.filename);
+        try {
+          cloudinary.uploader.destroy(prevImage.public_id);
+        } catch (err) {
+          console.log(err);
+        }
       }
+
       res.status(200).json({
         status: 'success',
         data: {
