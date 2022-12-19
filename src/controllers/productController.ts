@@ -6,7 +6,9 @@ import Product from '../models/productModel';
 import { catchAsync } from '../utils/catchAsync';
 import { toNewProductEntry } from '../tsUtils/builders';
 import { INewProductEntry, IProduct, IUpdateProductEntry } from '../tsTypes';
-import { parseName } from '../tsUtils/parsers';
+// import { parseName } from '../tsUtils/parsers';
+import { AppError } from '../utils/appError';
+import { ErrorStatusCode } from '../tsTypes/error.types';
 
 //controllers for baseURL
 const getAllProducts = catchAsync(
@@ -30,22 +32,21 @@ const createProduct = catchAsync(
         return name;
       },
     });
-    form.parse(req, async (err, fields, files) => {
-      if (err) {
-        console.log('error !', err);
-        return next(err);
-      }
-      const found: IProduct | null = await Product.findOne({
-        name: parseName(fields.name),
-      });
-      if (found) {
-        return next(new Error('Product name already exists'));
-      }
 
+    form.on('error', (err: Error) => {
+      new AppError({
+        name: err.name || 'Form Error',
+        message: err.message,
+        statusCode: ErrorStatusCode.BAD_REQUEST,
+      });
+      next(err);
+    });
+
+    form.parse(req, async (_err, fields, files) => {
       let savedImage = null;
       try {
         savedImage = await cloudinary.uploader.upload(
-          (<any>files).image.filepath,
+          (<any>files)?.image?.filepath,
           {
             ...options,
             gravity: 'auto',
@@ -57,19 +58,28 @@ const createProduct = catchAsync(
           }
         );
       } catch (err) {
-        console.log(err);
+        return next(
+          new AppError({
+            message: 'Image could not be saved',
+            statusCode: ErrorStatusCode.INTERNAL_SERVER_ERROR,
+          })
+        );
       }
 
-      const product: INewProductEntry = toNewProductEntry(fields, savedImage);
+      try {
+        const product: INewProductEntry = toNewProductEntry(fields, savedImage);
 
-      const newProduct = await Product.create(product);
-      console.log({ newProduct });
-      res.status(201).json({
-        status: 'success',
-        data: {
-          data: newProduct,
-        },
-      });
+        const newProduct = await Product.create(product);
+
+        res.status(201).json({
+          status: 'success',
+          data: {
+            data: newProduct,
+          },
+        });
+      } catch (err) {
+        next(err);
+      }
     });
   }
 );
@@ -95,12 +105,16 @@ const deleteAllDevProducts = catchAsync(
   }
 );
 
-//controllers for baseURL/:id
 const getProductById = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const found: IProduct | null = await Product.findById(req.params.id);
     if (!found) {
-      return next(new Error('Could not find product'));
+      return next(
+        new AppError({
+          message: 'Product not found',
+          statusCode: ErrorStatusCode.NOT_FOUND,
+        })
+      );
     }
 
     res.status(200).json({
@@ -122,7 +136,12 @@ const deactivateOneProduct = catchAsync(
       { new: true }
     );
     if (!deactivated) {
-      return next(new Error('Error: could not deactivate'));
+      return next(
+        new AppError({
+          message: 'Could not deactivate',
+          statusCode: ErrorStatusCode.INTERNAL_SERVER_ERROR,
+        })
+      );
     }
 
     res.status(204).json({
@@ -141,9 +160,11 @@ const deleteOneProduct = catchAsync(
 
     if (!deleted) {
       return next(
-        new Error(
-          'No delete: make sure ID is correct and that the product was deactivated'
-        ) //404 error
+        new AppError({
+          message:
+            'No delete: make sure ID is correct and that the product was deactivated',
+          statusCode: ErrorStatusCode.INTERNAL_SERVER_ERROR, // OR INTERNAL ?
+        })
       );
     }
     cloudinary.uploader.destroy(deleted.image.public_id);
@@ -169,30 +190,41 @@ const editProduct = catchAsync(
         req.params.id
       );
       if (!productToUpdate) {
-        return next(new Error('No product found with that ID')); //404
+        return next(
+          new AppError({
+            message: 'Product not found',
+            statusCode: ErrorStatusCode.NOT_FOUND,
+          })
+        );
       }
 
       //TODO: refactor with try catch block
       let savedImage = null;
-      console.log({ files });
-      try {
-        savedImage = await cloudinary.uploader.upload(
-          (<any>files).image.filepath,
-          {
-            ...options,
-            gravity: 'auto',
-            height: 100,
-            width: 200,
-            crop: 'fill',
-            //NOTE: https://console.cloudinary.com/documentation/webpurify_image_moderation_addon?customer_external_id=75e9038568056c9a66455c5ff1b728&frameless=1
-            // moderation: 'webpurify', //NOTE: only 50req per day are free to purify images
-          }
-        );
-      } catch (err) {
-        console.log(err);
+      if (files?.image) {
+        try {
+          savedImage = await cloudinary.uploader.upload(
+            (<any>files)?.image?.filepath,
+            {
+              ...options,
+              gravity: 'auto',
+              height: 100,
+              width: 200,
+              crop: 'fill',
+              //NOTE: https://console.cloudinary.com/documentation/webpurify_image_moderation_addon?customer_external_id=75e9038568056c9a66455c5ff1b728&frameless=1
+              // moderation: 'webpurify', //NOTE: only 50req per day are free to purify images
+            }
+          );
+          //TODO: verify if images are destroyed
+          cloudinary.uploader.destroy(productToUpdate.image.public_id);
+        } catch (err) {
+          return next(
+            new AppError({
+              message: 'Image could not be saved',
+              statusCode: ErrorStatusCode.INTERNAL_SERVER_ERROR,
+            })
+          );
+        }
       }
-
-      console.log({ savedImage });
 
       const entriesToBeSaved: IUpdateProductEntry = {
         ...fields,
@@ -205,8 +237,6 @@ const editProduct = catchAsync(
             }
           : productToUpdate.image,
       };
-
-      console.log({ entriesToBeSaved });
 
       Object.assign(productToUpdate, entriesToBeSaved);
       const updated = await productToUpdate.save();

@@ -6,18 +6,30 @@ import { IUser } from '../tsTypes';
 
 import config from '../utils/config';
 import User from '../models/userModel';
+import { ErrorStatusCode } from '../tsTypes/error.types';
+import { AppError } from '../utils/appError';
 
 const handleRefreshToken = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const cookies = req.cookies;
     if (!cookies?.jwt) {
-      return next(new Error('no jwt cookie found')); //401
+      return next(
+        new AppError({
+          message: 'No jwt cookie found',
+          statusCode: ErrorStatusCode.UNAUTHORIZED,
+        })
+      );
     }
     const refreshToken = cookies.jwt;
     const found: IUser | null = await User.findOne({ refreshToken });
 
     if (!found) {
-      return next(new Error('user not found')); // 403
+      return next(
+        new AppError({
+          message: 'No user found',
+          statusCode: ErrorStatusCode.FORBIDEN,
+        })
+      );
     }
     const userForToken = { username: found.username, id: found._id };
 
@@ -27,13 +39,18 @@ const handleRefreshToken = catchAsync(
     );
 
     if (!decodedToken) {
-      return next(new Error('invalid token !!')); //403
+      return next(
+        new AppError({
+          message: 'Invalid token',
+          statusCode: ErrorStatusCode.FORBIDEN,
+        })
+      );
     }
 
     const accessToken = sign(userForToken, config.ACCESS_TOKEN_SECRET, {
       expiresIn: '15m',
     });
-    console.log('refreshing....!', accessToken);
+
     res.status(200).json({
       accessToken,
       loggedUser: {

@@ -14,6 +14,8 @@ import {
   toPaginationOptions,
   toReqQueryAfterBefore,
 } from '../tsUtils/builders';
+import { AppError } from '../utils/appError';
+import { ErrorStatusCode } from '../tsTypes/error.types';
 
 //controllers for baseURL
 const getAllCarts = catchAsync(async (req: Request, res: Response) => {
@@ -45,22 +47,32 @@ const getAllCarts = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const createCart = catchAsync(async (req: Request, res: Response) => {
-  console.log(req.body);
-  const cart: ICartToBeSaved = toCartToBeSaved(req.body, req.user);
-  const savedCart: ICart = await Cart.create(cart);
-  await savedCart.populate({
-    path: 'createdBy',
-    select: 'username fullname role _id',
-  });
+const createCart = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const cart: ICartToBeSaved = toCartToBeSaved(req.body, req.user);
+    const savedCart: ICart = await Cart.create(cart);
+    if (!savedCart) {
+      return next(
+        new AppError({
+          message: 'Card could not be created',
+          statusCode: ErrorStatusCode.INTERNAL_SERVER_ERROR,
+        })
+      );
+    }
 
-  res.status(201).json({
-    status: 'success',
-    data: {
-      data: savedCart,
-    },
-  });
-});
+    await savedCart.populate({
+      path: 'createdBy',
+      select: 'username fullname role _id',
+    });
+
+    res.status(201).json({
+      status: 'success',
+      data: {
+        data: savedCart,
+      },
+    });
+  }
+);
 
 //NOTE: only in dev environment for dev db
 const deleteAllCarts = catchAsync(
@@ -68,7 +80,12 @@ const deleteAllCarts = catchAsync(
     if (req.body.deleteAll === 'true' && config.NODE_ENV === 'dev') {
       const { acknowledged } = await Cart.deleteMany({});
       if (!acknowledged) {
-        return next(new Error('Could NOT delete'));
+        return next(
+          new AppError({
+            message: 'Could not delete',
+            statusCode: ErrorStatusCode.INTERNAL_SERVER_ERROR,
+          })
+        );
       }
       res.status(204).json({
         status: 'success',
@@ -83,7 +100,12 @@ const getCartById = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const found = await Cart.findById(req.params.id);
     if (!found) {
-      return next(new Error('Could not find product'));
+      return next(
+        new AppError({
+          message: 'Cart not found',
+          statusCode: ErrorStatusCode.NOT_FOUND,
+        })
+      );
     }
     res.status(200).json({
       status: 'success',
@@ -104,7 +126,12 @@ const deactivateOneCart = catchAsync(
       { new: true }
     );
     if (!deactivated) {
-      return next(new Error('Could not deactivate'));
+      return next(
+        new AppError({
+          message: 'Could not deactivate',
+          statusCode: ErrorStatusCode.INTERNAL_SERVER_ERROR,
+        })
+      );
     }
     res.status(204).json({
       status: 'success',
@@ -120,12 +147,13 @@ const deleteOneCart = catchAsync(
     });
     if (!deleted) {
       return next(
-        new Error(
-          'No delete: make sure ID is correct and that the cart was deactivated'
-        )
+        new AppError({
+          message:
+            'No delete: make sure ID is correct and that the cart was deactivated',
+          statusCode: ErrorStatusCode.INTERNAL_SERVER_ERROR,
+        })
       );
     }
-    console.log('deleted !!!', deleted);
     res.status(204).json({
       status: 'success',
       data: null,
@@ -138,11 +166,24 @@ const updateOneCart = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const cartToUpdate = await Cart.findById(req.params.id);
     if (!cartToUpdate) {
-      return next(new Error('No cart found with that ID')); //404
+      return next(
+        new AppError({
+          message: 'Cart not found',
+          statusCode: ErrorStatusCode.NOT_FOUND,
+        })
+      );
     }
     cartToUpdate.items = req.body.items;
     cartToUpdate.lastEdited = { editDate: new Date(), editedBy: req.user?.id };
     const updated = await cartToUpdate.save();
+    if (!updated) {
+      return next(
+        new AppError({
+          message: 'Cart not updated',
+          statusCode: ErrorStatusCode.INTERNAL_SERVER_ERROR,
+        })
+      );
+    }
     await updated.populate({
       path: 'createdBy',
       select: 'username fullname role _id',
