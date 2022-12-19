@@ -1,5 +1,10 @@
 import { ObjectId } from 'mongoose';
-import { ProductCourseType, ICartItemTobeSaved } from '../../tsTypes';
+import {
+  ProductCourseType,
+  ICartItemTobeSaved,
+  IUser,
+  UserRole,
+} from '../../tsTypes';
 
 //The isSomething functions are a so-called type guards which have a type predicate as the return type
 
@@ -37,4 +42,8 @@ export const isDateString = (date: unknown): date is string => {
     return new Date(date) instanceof Date && !isNaN(Date.parse(date));
   }
   return false;
+};
+
+export const isValidRole = (role: any): role is IUser['role'] => {
+  return Object.values(UserRole).includes(role);
 };

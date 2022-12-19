@@ -7,6 +7,7 @@ import {
   parseProductCourseType,
   parseFormStringInput,
   parseQueryDate,
+  parseUserRole,
 } from '../parsers';
 
 import {
@@ -49,7 +50,6 @@ export const toNewUserEntry = (obj: any): INewUserEntry => {
     username: parseFormStringInput(obj.username, 'username'),
     email: parseFormStringInput(obj.email, 'email'),
     fullName: parseFormStringInput(obj.fullName, 'full name'),
-    //TODO: Parse and compare passwords
     password: parseFormStringInput(obj.password, 'password'),
     passwordConfirm: parseFormStringInput(
       obj.passwordConfirm,
@@ -61,8 +61,8 @@ export const toNewUserEntry = (obj: any): INewUserEntry => {
 
 export const toUpdateUserEntry = (obj: any): IUpdateUserEntry => {
   const updateUserEntry = {} as IUpdateUserEntry;
-  //TODO: Parse role
-  if (obj.role) updateUserEntry.role = obj.role;
+
+  if (obj.role) updateUserEntry.role = parseUserRole(obj.role);
   if (obj.fullName)
     updateUserEntry.fullName = parseFormStringInput(obj.fullName, 'full name');
   if (obj.username)

@@ -1,11 +1,17 @@
 import mongoose from 'mongoose';
 
-export type Role = 'user' | 'admin' | 'dev';
+// export type Role = 'user' | 'admin' | 'dev';
+
+export enum UserRole {
+  User = 'user',
+  Admin = 'admin',
+  Dev = 'dev',
+}
 
 export interface IUser
   extends Omit<INewUserEntry, 'password' | 'passwordConfirm'>,
     mongoose.Document {
-  role: Role;
+  role: UserRole;
   passwordHash: string;
   active: boolean;
   refreshToken: string;
@@ -28,6 +34,6 @@ export interface IUpdateUserEntry {
   email?: string;
   fullName?: string;
   password?: string;
-  role?: Role;
+  role?: UserRole;
   passwordConfirm?: string;
 }

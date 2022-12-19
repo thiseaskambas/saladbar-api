@@ -1,4 +1,9 @@
-import { isString, isDateString, isValidMongoId } from '../typeguards';
+import {
+  isString,
+  isDateString,
+  isValidMongoId,
+  isValidRole,
+} from '../typeguards';
 import { IUser, NodeEnv } from '../../tsTypes';
 import { ErrorStatusCode } from '../../tsTypes/error.types';
 import { AppError } from '../../utils/appError';
@@ -100,4 +105,14 @@ export const parseQueryDate = (date: unknown): string => {
     });
   }
   return date;
+};
+
+export const parseUserRole = (role: unknown): IUser['role'] => {
+  if (!isValidRole(role)) {
+    throw new AppError({
+      message: 'not a valid user role',
+      statusCode: ErrorStatusCode.BAD_REQUEST,
+    });
+  }
+  return role;
 };
