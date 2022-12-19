@@ -1,21 +1,24 @@
 import app from './src/app';
+
 import config from './src/utils/config';
-// import errorController from './src/controllers/errorController';
-//NOTE: Dealing With Unhandled and Uncaught Errors
-//(1)
+
 process.on('uncaughtException', (error: Error) => {
   console.log(`Uncaught Exception: ${error.message}`);
-  // errorController.errorHandler(error);
+  //TODO: need to implement a tool for restarting the app on the host service (if not automatic)
   process.exit(1);
 });
 
-app.listen(config.PORT, () => {
+const server = app.listen(config.PORT, () => {
   console.log(`Server running on port ${config.PORT}`);
 });
 
 //(2)when not handling a rejected Promise with a .catch() :
 process.on('unhandledRejection', (reason: Error | any) => {
-  console.log(`Unhandled Rejection: ${reason.message || reason}`);
-  // throw new Error(reason.message || reason);
-  process.exit(1);
+  console.log(
+    `Unhandled Rejection: ${reason.message || reason}. Shutting app down.`
+  );
+  server.close(() => {
+    //TODO: need to implement a tool for restarting the app on the host service (if not automatic)
+    process.exit(1);
+  });
 });
