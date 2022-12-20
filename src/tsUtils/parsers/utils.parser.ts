@@ -26,7 +26,7 @@ export const parsePassword = (input: unknown): string => {
   if (
     !input ||
     !isString(input) ||
-    !validator.isStrongPassword(input, { minLength: 5, minNumbers: 1 })
+    validator.isStrongPassword(input, { minLength: 5, minNumbers: 1 })
   ) {
     throw new AppError({
       message: `Password not strong enough, must have at least 1 number and be 5 characters long`,

@@ -3,23 +3,6 @@ import { Schema, model } from 'mongoose';
 import validator from 'validator';
 import { IUser } from '../tsTypes';
 
-/* const tokenSchema = new Schema({
-  _userId: {
-    type: Schema.Types.ObjectId,
-    required: true,
-    ref: 'user'
-  },
-  token: {
-    type: String,
-    required: true
-  },
-  expireAt: {
-    type: Date,
-    default: Date.now,
-    index: { expires: 60*60*24 }
-  }
-}) */
-
 const userSchema = new Schema<IUser>(
   {
     username: {
@@ -62,9 +45,9 @@ const userSchema = new Schema<IUser>(
     },
   }
 );
-
+//set the date 1sec back so that the password appears older than the new token released when modifying it
 userSchema.pre('save', function (next) {
-  if (!this.isModified('password') || this.isNew) return next();
+  if (!this.isModified('passwordHash') || this.isNew) return next();
   this.passwordChangedAt = new Date(Date.now() - 1000);
   next();
 });
