@@ -8,6 +8,8 @@ import {
   parseFormStringInput,
   parseQueryDate,
   parseUserRole,
+  parseEmail,
+  parsePassword,
 } from '../parsers';
 
 import {
@@ -48,13 +50,10 @@ export const toNewProductEntry = (fields: any, file: any): INewProductEntry => {
 export const toNewUserEntry = (obj: any): INewUserEntry => {
   const newUserEntry = {
     username: parseFormStringInput(obj.username, 'username'),
-    email: parseFormStringInput(obj.email, 'email'),
+    email: parseEmail(obj.email),
     fullName: parseFormStringInput(obj.fullName, 'full name'),
-    password: parseFormStringInput(obj.password, 'password'),
-    passwordConfirm: parseFormStringInput(
-      obj.passwordConfirm,
-      'confirmation password'
-    ),
+    password: parsePassword(obj.password),
+    passwordConfirm: parsePassword(obj.passwordConfirm),
   };
   return newUserEntry;
 };
@@ -81,7 +80,7 @@ export const toReqQueryAfterBefore = (obj: any): IReqQueryAfterBeforeDate => {
 export const toLoginCredentials = (obj: any): ILoginCredentials => {
   const loginCredentials: ILoginCredentials = {
     password: parseFormStringInput(obj.password, 'password'),
-    email: parseFormStringInput(obj.email, 'email'),
+    email: parseEmail(obj.email),
   };
   return loginCredentials;
 };

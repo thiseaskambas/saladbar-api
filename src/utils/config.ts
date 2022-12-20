@@ -1,6 +1,7 @@
 import * as dotenv from 'dotenv';
 import { NodeEnv } from '../tsTypes/utils.types';
 import {
+  parseEmail,
   parseEmailCredentials,
   parseNodeEnv,
   parseSecret,
@@ -29,7 +30,7 @@ const REFRESH_TOKEN_SECRET: string = parseSecret(
 const GMAIL_NODEMAILER_PSW: string = parseEmailCredentials(
   process.env.GMAIL_NODEMAILER_PSW
 );
-const GMAIL_EMAIL: string = parseEmailCredentials(process.env.GMAIL_EMAIL);
+const GMAIL_EMAIL: string = parseEmail(process.env.GMAIL_EMAIL);
 
 const CLOUDINARY_NAME = process.env.CLOUDINARY_NAME;
 const CLOUDINARY_KEY = process.env.CLOUDINARY_KEY;
