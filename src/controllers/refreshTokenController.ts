@@ -26,12 +26,11 @@ const handleRefreshToken = catchAsync(
     if (!found) {
       return next(
         new AppError({
-          message: 'No user found',
+          message: 'User not found with the provided refresh token',
           statusCode: ErrorStatusCode.FORBIDEN,
         })
       );
     }
-    const userForToken = { username: found.username, id: found._id };
 
     const decodedToken = await verify(
       refreshToken,
@@ -46,6 +45,8 @@ const handleRefreshToken = catchAsync(
         })
       );
     }
+
+    const userForToken = { username: found.username, id: found._id };
 
     const accessToken = sign(userForToken, config.ACCESS_TOKEN_SECRET, {
       expiresIn: '15m',

@@ -39,7 +39,11 @@ const logIn = catchAsync(
         })
       );
     }
-    const userForToken = { username: found.username, id: found._id };
+
+    const userForToken = {
+      username: found.username,
+      id: found._id,
+    };
     const accessToken = sign(userForToken, config.ACCESS_TOKEN_SECRET, {
       expiresIn: '15m',
     });

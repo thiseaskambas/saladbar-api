@@ -43,8 +43,22 @@ export const verifyJWT = catchAsync(
       );
     }
 
-    //TODO:  Check if user changed password after the token was issued
-    req.user = currentUser;
+    if (currentUser.passwordChangedAt > new Date(decodedToken.iat * 1000)) {
+      return next(
+        new AppError({
+          message: 'You have modified your password, please login again.',
+          statusCode: ErrorStatusCode.UNAUTHORIZED,
+        })
+      );
+    }
+
+    req.user = {
+      username: currentUser.username,
+      id: currentUser._id,
+      role: currentUser.role,
+      email: currentUser.email,
+      fullName: currentUser.fullName,
+    };
     next();
   }
 );
