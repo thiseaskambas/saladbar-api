@@ -10,6 +10,7 @@ import config from '../utils/config';
 import { sendPwdResetEmail } from '../utils/emailSender';
 import { AppError } from '../utils/appError';
 import { ErrorStatusCode } from '../tsTypes/error.types';
+import { parsePassword } from '../tsUtils/parsers';
 
 const logIn = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -155,7 +156,9 @@ const resetPassword = catchAsync(
         })
       );
     }
-    const { password, passwordConfirm } = req.body;
+
+    const password = parsePassword(req.body.password);
+    const passwordConfirm = parsePassword(req.body.passwordConfirm);
     if (password !== passwordConfirm) {
       return new AppError({
         message: 'Password confirmation failled',
@@ -192,9 +195,11 @@ const updatePassword = catchAsync(
       req.body.oldPassword,
       found.passwordHash
     );
-    if (req.body.password !== req.body.passwordConfirm || !oldPasswordCorrect) {
+    const password = parsePassword(req.body.password);
+    const passwordConfirm = parsePassword(req.body.passwordConfirm);
+    if (password !== passwordConfirm || !oldPasswordCorrect) {
       return new AppError({
-        message: 'Password confirmation failled',
+        message: 'Password update failed',
         statusCode: ErrorStatusCode.BAD_REQUEST,
       });
     }

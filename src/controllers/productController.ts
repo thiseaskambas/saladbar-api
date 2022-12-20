@@ -32,6 +32,7 @@ const createProduct = catchAsync(
       filename: (name, _ext) => {
         return name;
       },
+      maxFileSize: 52428800, // 50MB in bytes
     });
 
     form.on('error', (err: Error) => {
@@ -170,7 +171,7 @@ const deleteOneProduct = catchAsync(
     }
     const deleted = await Product.findOneAndRemove({
       _id: req.params.id,
-      active: false,
+      // active: true,
     });
 
     if (!deleted) {
@@ -182,6 +183,7 @@ const deleteOneProduct = catchAsync(
         })
       );
     }
+
     cloudinary.uploader.destroy(deleted.image.public_id);
     res.status(204).json({
       status: 'success',

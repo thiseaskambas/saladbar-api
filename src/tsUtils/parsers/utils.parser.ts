@@ -1,3 +1,4 @@
+import validator from 'validator';
 import {
   isString,
   isDateString,
@@ -14,7 +15,31 @@ export const parseFormStringInput = (
 ): string => {
   if (!input || !isString(input)) {
     throw new AppError({
-      message: `Missing or incorect ${description}`,
+      message: `Missing ${description}, or not a string`,
+      statusCode: ErrorStatusCode.BAD_REQUEST,
+    });
+  }
+  return input.trim();
+};
+
+export const parsePassword = (input: unknown): string => {
+  if (
+    !input ||
+    !isString(input) ||
+    !validator.isStrongPassword(input, { minLength: 5, minNumbers: 1 })
+  ) {
+    throw new AppError({
+      message: `Password not strong enough, must have at least 1 number and be 5 characters long`,
+      statusCode: ErrorStatusCode.BAD_REQUEST,
+    });
+  }
+  return input;
+};
+
+export const parseEmail = (input: unknown): string => {
+  if (!input || !isString(input) || !validator.isEmail(input)) {
+    throw new AppError({
+      message: `Missing or invalid email`,
       statusCode: ErrorStatusCode.BAD_REQUEST,
     });
   }
