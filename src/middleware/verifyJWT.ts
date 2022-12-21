@@ -54,7 +54,7 @@ export const verifyJWT = catchAsync(
 
     req.user = {
       username: currentUser.username,
-      id: currentUser._id,
+      id: currentUser.id,
       role: currentUser.role,
       email: currentUser.email,
       fullName: currentUser.fullName,
