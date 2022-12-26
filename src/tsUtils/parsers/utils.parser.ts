@@ -8,6 +8,7 @@ import {
 import { IUser, NodeEnv } from '../../tsTypes';
 import { ErrorStatusCode } from '../../tsTypes/error.types';
 import { AppError } from '../../utils/appError';
+import { IMessage } from '../../tsTypes/message.types';
 
 export const parseFormStringInput = (
   input: unknown,
@@ -110,6 +111,23 @@ export const parseNumber = (price: unknown): number => {
     });
   }
   return Number(price);
+};
+export const parseImportance = (
+  importance: unknown
+): IMessage['importance'] => {
+  if (!importance || isNaN(Number(importance))) {
+    return 1;
+  }
+  if (
+    Math.round(Number(importance)) < 1 ||
+    Math.round(Number(importance)) > 3
+  ) {
+    throw new AppError({
+      message: 'Importance can be 1,2 or 3',
+      statusCode: ErrorStatusCode.BAD_REQUEST,
+    });
+  }
+  return Number(importance);
 };
 
 export const parseNodeEnv = (env: unknown): NodeEnv => {
