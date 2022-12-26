@@ -161,7 +161,7 @@ const deactivateOneProduct = catchAsync(
 const deleteOneProduct = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const foundCart = await Cart.findOne({ 'items.product': req.params.id });
-    console.log({ foundCart });
+
     if (foundCart) {
       return next(
         new AppError({
