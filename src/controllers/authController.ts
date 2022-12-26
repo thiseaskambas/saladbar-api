@@ -15,14 +15,7 @@ import { parsePassword } from '../tsUtils/parsers';
 const logIn = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { email, password }: ILoginCredentials = toLoginCredentials(req.body);
-    if (!email || !password) {
-      return next(
-        new AppError({
-          message: 'Please provide email and password',
-          statusCode: ErrorStatusCode.BAD_REQUEST,
-        })
-      );
-    }
+
     const found: IUser | null = await User.findOne({ email });
 
     const passwordCorrect =

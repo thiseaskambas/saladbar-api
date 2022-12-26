@@ -7,6 +7,7 @@ import mongoSanitize from 'express-mongo-sanitize';
 import hpp from 'hpp';
 
 import productsRouter from './routes/productRoutes';
+import messageRouter from './routes/messageRoutes';
 import cartRouter from './routes/cartRoutes';
 import authRouter from './routes/authRoutes';
 import refreshTokenRouter from './routes/refreshTokenRoutes';
@@ -49,6 +50,7 @@ mongoose
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/refresh', refreshTokenRouter);
 app.use('/api/v1/logout', verifyJWT, logoutRouter);
+app.use('/api/v1/message', verifyJWT, messageRouter);
 app.use('/api/v1/users', verifyJWT, usersRouter);
 app.use('/api/v1/products', verifyJWT, productsRouter);
 app.use('/api/v1/carts', verifyJWT, cartRouter);

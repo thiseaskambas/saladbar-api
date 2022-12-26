@@ -10,6 +10,7 @@ import {
   parseUserRole,
   parseEmail,
   parsePassword,
+  parseImportance,
 } from '../parsers';
 
 import {
@@ -21,6 +22,7 @@ import {
   IPaginationOptions,
   IUpdateUserEntry,
 } from '../../tsTypes';
+import { IMessageEntry } from '../../tsTypes/message.types';
 
 export const toCartToBeSaved = (object: any, user: any): ICartToBeSaved => {
   const cartToBeSaved: ICartToBeSaved = {
@@ -84,10 +86,21 @@ export const toLoginCredentials = (obj: any): ILoginCredentials => {
   };
   return loginCredentials;
 };
+
 export const toPaginationOptions = (obj: any): IPaginationOptions => {
   const pageOptions = {
     page: parseInt(obj.page, 10) || 0,
     limit: parseInt(obj.limit, 10) || 10,
   };
   return pageOptions;
+};
+
+export const toMessageEntry = (body: any): IMessageEntry => {
+  const messageEntry: IMessageEntry = {
+    title: parseFormStringInput(body.title, 'Title'),
+    text: parseFormStringInput(body.title, 'Text'),
+    createdAt: new Date(),
+    importance: parseImportance(body.importance),
+  };
+  return messageEntry;
 };
