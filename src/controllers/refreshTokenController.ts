@@ -11,6 +11,7 @@ import { AppError } from '../utils/appError';
 
 const handleRefreshToken = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
+    console.log('REFRESHING TOKEN');
     const cookies = req.cookies;
     if (!cookies?.jwt) {
       return next(
@@ -49,7 +50,7 @@ const handleRefreshToken = catchAsync(
     const userForToken = { username: found.username, id: found._id };
 
     const accessToken = sign(userForToken, config.ACCESS_TOKEN_SECRET, {
-      expiresIn: '15m',
+      expiresIn: config.ACCESS_TOKEN_DURATION,
     });
 
     res.status(200).json({

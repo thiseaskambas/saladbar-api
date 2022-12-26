@@ -92,6 +92,16 @@ export const parseName = (name: unknown): string => {
   return name.trim();
 };
 
+export const parseDuration = (name: unknown): string => {
+  if (!name || !isString(name)) {
+    throw new AppError({
+      message: 'Duration is required and must be a string',
+      statusCode: ErrorStatusCode.BAD_REQUEST,
+    });
+  }
+  return name.trim();
+};
+
 export const parseNumber = (price: unknown): number => {
   if (!price || isNaN(Number(price))) {
     throw new AppError({

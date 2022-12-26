@@ -6,6 +6,7 @@ import {
   parseNodeEnv,
   parseSecret,
   parseUri,
+  parseDuration,
 } from '../tsUtils/parsers';
 
 dotenv.config();
@@ -23,6 +24,11 @@ const DB_URI: string =
 const ACCESS_TOKEN_SECRET: string = parseSecret(
   process.env.ACCESS_TOKEN_SECRET
 );
+
+const ACCESS_TOKEN_DURATION: string = parseDuration(
+  process.env.ACCESS_TOKEN_DURATION
+);
+
 const REFRESH_TOKEN_SECRET: string = parseSecret(
   process.env.REFRESH_TOKEN_SECRET
 );
@@ -41,6 +47,7 @@ export default {
   DB_URI,
   PORT,
   ACCESS_TOKEN_SECRET,
+  ACCESS_TOKEN_DURATION,
   REFRESH_TOKEN_SECRET,
   GMAIL_NODEMAILER_PSW,
   GMAIL_EMAIL,

@@ -45,7 +45,7 @@ const logIn = catchAsync(
       id: found._id,
     };
     const accessToken = sign(userForToken, config.ACCESS_TOKEN_SECRET, {
-      expiresIn: '15m',
+      expiresIn: config.ACCESS_TOKEN_DURATION,
     });
     const refreshToken = sign(userForToken, config.REFRESH_TOKEN_SECRET, {
       expiresIn: '1d',

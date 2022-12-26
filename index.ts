@@ -17,7 +17,9 @@ process.on('unhandledRejection', (reason: Error | any) => {
   console.log(
     `Unhandled Rejection: ${reason.message || reason}. Shutting app down.`
   );
+  //TODO: fixserver not closing
   server.close(() => {
+    console.log('server closed, shtting now');
     //TODO: need to implement a tool for restarting the app on the host service (if not automatic)
     process.exit(1);
   });

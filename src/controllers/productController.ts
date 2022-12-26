@@ -51,6 +51,7 @@ const createProduct = catchAsync(
           (<any>files)?.image?.filepath,
           {
             ...options,
+
             gravity: 'auto',
             height: 100,
             width: 200,
@@ -70,7 +71,6 @@ const createProduct = catchAsync(
 
       try {
         const product: INewProductEntry = toNewProductEntry(fields, savedImage);
-
         const newProduct = await Product.create(product);
 
         res.status(201).json({
@@ -80,6 +80,11 @@ const createProduct = catchAsync(
           },
         });
       } catch (err) {
+        try {
+          cloudinary.uploader.destroy(savedImage.public_id);
+        } catch (errCloud) {
+          next(errCloud);
+        }
         next(err);
       }
     });
@@ -96,7 +101,7 @@ const deleteAllDevProducts = catchAsync(
         );
         console.log({ result });
       } catch (err) {
-        console.log(err);
+        next(err);
       }
       return res.status(204).json({
         status: 'success',
@@ -261,6 +266,7 @@ const editProduct = catchAsync(
         try {
           cloudinary.uploader.destroy(prevImage.public_id);
         } catch (err) {
+          next(err);
           console.log(err);
         }
       }
