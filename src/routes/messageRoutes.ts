@@ -7,8 +7,8 @@ router
   .route('/')
   .get(messageController.getAllMessages)
   .post(restrictTo('admin', 'dev'), messageController.createMessage);
-router.route('/latest').get(messageController.getLatestMessage);
 
+router.route('/latest').get(messageController.getLatestMessage);
 router
   .route('/:id')
   .get(messageController.getMessageById)

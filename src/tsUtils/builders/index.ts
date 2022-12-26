@@ -98,8 +98,7 @@ export const toPaginationOptions = (obj: any): IPaginationOptions => {
 export const toMessageEntry = (body: any): IMessageEntry => {
   const messageEntry: IMessageEntry = {
     title: parseFormStringInput(body.title, 'Title'),
-    text: parseFormStringInput(body.title, 'Text'),
-    createdAt: new Date(),
+    text: parseFormStringInput(body.text, 'Text'),
     importance: parseImportance(body.importance),
   };
   return messageEntry;

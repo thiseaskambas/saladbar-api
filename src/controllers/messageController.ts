@@ -23,7 +23,7 @@ const getLatestMessage = catchAsync(
       {},
       {},
       { sort: { createdAt: -1 } }
-    );
+    ).populate({ path: 'createdBy', select: 'username' });
     if (!lastMessage) {
       return next(
         new AppError({
@@ -34,9 +34,7 @@ const getLatestMessage = catchAsync(
     }
     res.status(200).json({
       status: 'success',
-      data: {
-        data: lastMessage,
-      },
+      data: lastMessage,
     });
   }
 );
@@ -65,8 +63,9 @@ const createMessage = catchAsync(
     const messageObj = toMessageEntry(req.body);
     const newMessage = await Message.create({
       ...messageObj,
-      createdBy: req.user,
+      createdBy: req.user.id,
     });
+    await newMessage.populate({ path: 'createdBy', select: 'username' });
     res.status(200).json({
       status: 'success',
       data: {
