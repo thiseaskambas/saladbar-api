@@ -1,12 +1,23 @@
 import mongoose from 'mongoose';
 
-import { IProduct } from '../utils/tsTypes';
+import { IProduct, IProductImage } from '../tsTypes';
+
+const ImageSchema = new mongoose.Schema<IProductImage>({
+  url: {
+    type: String,
+    required: true,
+  },
+  filename: String,
+  secure_url: String,
+  public_id: String,
+});
 
 const productSchema = new mongoose.Schema<IProduct>(
   {
     name: {
       type: String,
       required: [true, 'Products must have a name'],
+      unique: true,
     },
 
     price: {
@@ -27,6 +38,9 @@ const productSchema = new mongoose.Schema<IProduct>(
       type: Boolean,
       required: [true, 'a product must be active true/false'],
       default: true,
+    },
+    image: {
+      type: ImageSchema,
     },
   },
   {
