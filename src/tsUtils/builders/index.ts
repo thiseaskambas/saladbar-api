@@ -11,6 +11,7 @@ import {
   parseEmail,
   parsePassword,
   parseImportance,
+  parseUserName,
 } from '../parsers';
 
 import {
@@ -51,7 +52,7 @@ export const toNewProductEntry = (fields: any, file: any): INewProductEntry => {
 
 export const toNewUserEntry = (obj: any): INewUserEntry => {
   const newUserEntry = {
-    username: parseFormStringInput(obj.username, 'username'),
+    username: parseUserName(obj.username),
     email: parseEmail(obj.email),
     fullName: parseFormStringInput(obj.fullName, 'full name'),
     password: parsePassword(obj.password),
@@ -66,8 +67,7 @@ export const toUpdateUserEntry = (obj: any): IUpdateUserEntry => {
   if (obj.role) updateUserEntry.role = parseUserRole(obj.role);
   if (obj.fullName)
     updateUserEntry.fullName = parseFormStringInput(obj.fullName, 'full name');
-  if (obj.username)
-    updateUserEntry.username = parseFormStringInput(obj.username, 'username');
+  if (obj.username) updateUserEntry.username = parseUserName(obj.username);
   return updateUserEntry;
 };
 

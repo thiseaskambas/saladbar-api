@@ -23,6 +23,22 @@ export const parseFormStringInput = (
   return input.trim();
 };
 
+export const parseUserName = (input: unknown): string => {
+  if (!input || !isString(input)) {
+    throw new AppError({
+      message: `Missing username, or not a string`,
+      statusCode: ErrorStatusCode.BAD_REQUEST,
+    });
+  }
+  if (input.trim().includes(' ')) {
+    throw new AppError({
+      message: `Usernames cannot contain spaces`,
+      statusCode: ErrorStatusCode.BAD_REQUEST,
+    });
+  }
+  return input.trim();
+};
+
 export const parsePassword = (input: unknown): string => {
   if (
     !input ||

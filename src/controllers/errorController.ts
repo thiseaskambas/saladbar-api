@@ -87,9 +87,9 @@ const errorHandler = (
   res: Response,
   next: NextFunction
 ) => {
-  if (config.NODE_ENV === 'dev') {
+  if (config.NODE_ENV === 'prod') {
     sendErrorDev(err, res);
-  } else if (config.NODE_ENV === 'prod') {
+  } else if (config.NODE_ENV === 'dev') {
     let errorCopy = Object.assign(err);
 
     if (errorCopy.name === 'CastError') {
