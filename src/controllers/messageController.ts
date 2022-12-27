@@ -51,9 +51,7 @@ const getMessageById = catchAsync(
     }
     res.status(200).json({
       status: 'success',
-      data: {
-        data: found,
-      },
+      data: found,
     });
   }
 );
@@ -68,9 +66,7 @@ const createMessage = catchAsync(
     await newMessage.populate({ path: 'createdBy', select: 'username' });
     res.status(200).json({
       status: 'success',
-      data: {
-        data: newMessage,
-      },
+      data: newMessage,
     });
   }
 );
