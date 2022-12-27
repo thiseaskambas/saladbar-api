@@ -36,6 +36,12 @@ export const parseUserName = (input: unknown): string => {
       statusCode: ErrorStatusCode.BAD_REQUEST,
     });
   }
+  if (input.trim().length > 15 || input.trim().length < 5) {
+    throw new AppError({
+      message: `Usernames must have between 5 and 10 characters`,
+      statusCode: ErrorStatusCode.BAD_REQUEST,
+    });
+  }
   return input.trim();
 };
 
