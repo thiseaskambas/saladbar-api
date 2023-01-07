@@ -44,13 +44,13 @@ const logIn = catchAsync(
       expiresIn: '1d',
     });
 
-    found.refreshToken = refreshToken;
+    found.refreshToken = [...found.refreshToken, refreshToken];
     await found.save();
     res.cookie('jwt', refreshToken, {
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000,
       //NOTE: secure: true - only serves on https for Production
-      secure: config.NODE_ENV === 'prod',
+      secure: config.NODE_ENV !== 'dev',
     });
     res.status(200).json({
       accessToken,
@@ -92,6 +92,7 @@ const signUp = catchAsync(
     const newUser = await User.create({
       ...input,
       passwordHash: hashedPassword,
+      role: 'demo',
     });
 
     res.status(201).json({
@@ -211,7 +212,7 @@ const updatePassword = catchAsync(
       expiresIn: '1d',
     });
 
-    found.refreshToken = refreshToken;
+    found.refreshToken.push(refreshToken);
     await found.save();
     res.cookie('jwt', refreshToken, {
       httpOnly: true,

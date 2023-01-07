@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-export type Role = 'user' | 'admin' | 'dev';
+export type Role = 'user' | 'admin' | 'dev' | 'demo';
 
 export enum UserRole {
   User = 'user',
@@ -14,7 +14,7 @@ export interface IUser
   role: Role;
   passwordHash: string;
   active: boolean;
-  refreshToken: string;
+  refreshToken: Array<string>;
   passwordChangedAt: Date;
   passwordResetToken: string | undefined;
   passwordResetExpires: Date | undefined;

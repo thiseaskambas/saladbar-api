@@ -72,7 +72,6 @@ const createProduct = catchAsync(
       try {
         const product: INewProductEntry = toNewProductEntry(fields, savedImage);
         const newProduct = await Product.create(product);
-
         res.status(201).json({
           status: 'success',
           data: {
@@ -260,7 +259,18 @@ const editProduct = catchAsync(
       };
 
       Object.assign(productToUpdate, entriesToBeSaved);
-      const updated = await productToUpdate.save();
+      let updated;
+      try {
+        updated = await productToUpdate.save();
+        res.status(200).json({
+          status: 'success',
+          data: {
+            data: updated,
+          },
+        });
+      } catch (err) {
+        next(err);
+      }
 
       if (updated && savedImage) {
         try {
@@ -270,13 +280,6 @@ const editProduct = catchAsync(
           console.log(err);
         }
       }
-
-      res.status(200).json({
-        status: 'success',
-        data: {
-          data: updated,
-        },
-      });
     });
   }
 );

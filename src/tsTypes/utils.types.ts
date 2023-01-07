@@ -3,7 +3,7 @@ export interface ILoginCredentials {
   email: string;
 }
 
-export type NodeEnv = 'dev' | 'prod';
+export type NodeEnv = 'dev' | 'prod' | 'demo';
 
 export interface IReqQueryAfterBeforeDate {
   after: string;

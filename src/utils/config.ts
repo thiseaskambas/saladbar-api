@@ -18,7 +18,9 @@ const NODE_ENV: NodeEnv = parseNodeEnv(process.env.NODE_ENV);
 const DB_URI: string =
   NODE_ENV === 'dev'
     ? parseUri(process.env.DB_URI_DEV)
-    : parseUri(process.env.DB_URI_PROD);
+    : NODE_ENV === 'prod'
+    ? parseUri(process.env.DB_URI_PROD)
+    : parseUri(process.env.DB_URI_DEMO);
 
 //TODO: type tokens correctly
 const ACCESS_TOKEN_SECRET: string = parseSecret(

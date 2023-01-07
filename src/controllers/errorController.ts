@@ -23,7 +23,7 @@ const unknownRouteHandler = (
 };
 
 const sendErrorDev = (err: AppError, res: Response) => {
-  console.log('🟠 ERROR ---> ', err);
+  console.error('🟠 ERROR ---> ', err);
   res.status(err.statusCode || 500).json({
     statusCode: err.statusCode || 500,
     error: err,
@@ -87,10 +87,10 @@ const errorHandler = (
   res: Response,
   next: NextFunction
 ) => {
-  if (config.NODE_ENV === 'prod') {
+  if (config.NODE_ENV === 'prod' || config.NODE_ENV === 'demo') {
     sendErrorDev(err, res);
   } else if (config.NODE_ENV === 'dev') {
-    let errorCopy = Object.assign(err);
+    let errorCopy = Object.create(err);
 
     if (errorCopy.name === 'CastError') {
       errorCopy = handleDBCastError(errorCopy);

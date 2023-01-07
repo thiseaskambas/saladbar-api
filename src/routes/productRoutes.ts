@@ -8,7 +8,7 @@ router
   .route('/')
   .get(productsController.getAllProducts)
   .post(restrictTo('admin', 'dev'), productsController.createProduct)
-  .delete(productsController.deleteAllDevProducts); // Dev environment only
+  .delete(restrictTo('dev'), productsController.deleteAllDevProducts); // Dev environment only
 
 router
   .route('/:id')

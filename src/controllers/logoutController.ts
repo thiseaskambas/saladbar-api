@@ -20,7 +20,9 @@ const logoutHandler = catchAsync(
     }
 
     //Delete refreshToken from DB!
-    found.refreshToken = '';
+    const index = found.refreshToken.findIndex(refreshToken);
+    found.refreshToken.splice(index);
+
     await found.save();
     res.clearCookie('jwt', { httpOnly: true });
     return res.status(200).json({ status: 'success' });

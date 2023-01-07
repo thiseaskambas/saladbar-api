@@ -19,7 +19,7 @@ const userSchema = new Schema<IUser>(
     },
     role: {
       type: String,
-      enum: ['user', 'admin', 'dev'],
+      enum: ['user', 'admin', 'dev', 'demo'],
       default: 'user',
     },
     passwordHash: String,
@@ -29,7 +29,7 @@ const userSchema = new Schema<IUser>(
       select: false,
     },
     fullName: String,
-    refreshToken: String,
+    refreshToken: [{ type: String }],
     passwordChangedAt: Date,
     passwordResetToken: String || undefined,
     passwordResetExpires: Date || undefined,

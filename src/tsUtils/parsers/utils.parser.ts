@@ -153,9 +153,9 @@ export const parseImportance = (
 };
 
 export const parseNodeEnv = (env: unknown): NodeEnv => {
-  if (!env || (env !== 'dev' && env !== 'prod')) {
+  if (!env || (env !== 'dev' && env !== 'prod' && env !== 'demo')) {
     throw new AppError({
-      message: 'NODE_ENV must be "dev" OR "prod',
+      message: 'NODE_ENV must be "dev" OR "prod OR "demo"',
       statusCode: ErrorStatusCode.BAD_REQUEST,
     });
   }

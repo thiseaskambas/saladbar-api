@@ -22,7 +22,9 @@ const handleRefreshToken = catchAsync(
       );
     }
     const refreshToken = cookies.jwt;
-    const found: IUser | null = await User.findOne({ refreshToken });
+    const found: IUser | null = await User.findOne({
+      refreshToken: refreshToken,
+    });
 
     if (!found) {
       return next(
