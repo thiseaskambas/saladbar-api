@@ -11,7 +11,7 @@ import { AppError } from '../utils/appError';
 
 const handleRefreshToken = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    console.log('REFRESHING TOKEN');
+    // console.log('REFRESHING TOKEN');
     const cookies = req.cookies;
     if (!cookies?.jwt) {
       return next(
